@@ -754,20 +754,15 @@ function Floating() {
     on(); window.addEventListener("scroll", on);
     return () => window.removeEventListener("scroll", on);
   }, []);
+  if (!top) return null;
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
-      {top && (
-        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          aria-label="Back to top"
-          className="h-12 w-12 rounded-full grid place-items-center text-navy shadow-[var(--shadow-luxe)] transition-transform hover:-translate-y-1"
-          style={{ background: "var(--gradient-gold)" }}>
-          <ArrowUp className="h-5 w-5" />
-        </button>
-      )}
-      <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" aria-label="WhatsApp"
-        className="h-14 w-14 rounded-full grid place-items-center bg-[#25D366] text-white shadow-[var(--shadow-luxe)] transition-transform hover:scale-110">
-        <MessageCircle className="h-6 w-6" />
-      </a>
+    <div className="fixed bottom-6 right-6 z-40">
+      <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Back to top"
+        className="h-12 w-12 rounded-full grid place-items-center text-navy shadow-[var(--shadow-luxe)] transition-transform hover:-translate-y-1"
+        style={{ background: "var(--gradient-gold)" }}>
+        <ArrowUp className="h-5 w-5" />
+      </button>
     </div>
   );
 }
