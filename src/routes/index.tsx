@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight, ArrowUp, Award, Building2, CheckCircle2, ChevronDown, Clock, Compass,
   Facebook, Hammer, HardHat, Home, Instagram, Layers, Layout, Leaf, Lightbulb,
-  Linkedin, Mail, MapPin, Menu, MessageCircle, Palette, Phone, Ruler, ShieldCheck,
+  Linkedin, Mail, MapPin, Menu, Palette, Phone, Ruler, ShieldCheck,
   Sofa, Sparkles, Star, Trees, Users, Utensils, X,
 } from "lucide-react";
 import logo from "@/assets/moon-logo.png";
