@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useInView, useScroll, useSpring, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight, ArrowUp, Award, Building2, CheckCircle2, ChevronDown, Clock, Compass,
@@ -71,18 +71,19 @@ function Section({
 }
 
 /* ---------------- NAV ---------------- */
+/* ---------------- NAV ---------------- */
 const NAV = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#services", label: "Services" },
-  { href: "#portfolio", label: "Portfolio" },
-  { href: "#projects", label: "Projects" },
-  { href: "#testimonials", label: "Testimonials" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "services", label: "Services" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "projects", label: "Projects" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "faq", label: "FAQ" },
+  { id: "contact", label: "Contact" },
 ];
 
-function Navbar() {
+function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tabId: string) => void }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -92,31 +93,40 @@ function Navbar() {
   }, []);
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "backdrop-blur-xl border-b border-white/10" : ""
-      }`}
-      style={{ background: scrolled ? "oklch(0.16 0.05 258 / 0.85)" : "transparent" }}
+      className="fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-xl border-b border-white/10"
+      style={{ background: "oklch(0.16 0.05 258 / 0.95)" }}
     >
       <div className="container-luxe flex items-center justify-between py-3">
-        <a href="#home" className="flex items-center gap-3">
+        <button onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none">
           <img src={logo} alt="Moon Construction & Interiors" className="h-12 w-12 md:h-14 md:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]" />
           <div className="hidden sm:block leading-tight">
             <div className="font-display text-white text-lg font-semibold tracking-wide">Moon</div>
             <div className="text-[10px] tracking-[0.3em] text-gold uppercase">Construction & Interiors</div>
           </div>
-        </a>
+        </button>
         <nav className="hidden lg:flex items-center gap-8">
           {NAV.map((n) => (
-            <a key={n.href} href={n.href} className="group relative text-sm text-white/85 hover:text-white transition-colors">
+            <button
+              key={n.id}
+              onClick={() => onTabChange(n.id)}
+              className={`group relative text-sm cursor-pointer transition-colors bg-transparent border-0 p-0 focus:outline-none ${
+                activeTab === n.id ? "text-gold font-semibold" : "text-white/85 hover:text-white"
+              }`}
+            >
               {n.label}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
-            </a>
+              <span className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
+                activeTab === n.id ? "w-full" : "w-0 group-hover:w-full"
+              }`} />
+            </button>
           ))}
         </nav>
-        <a href="#contact" className="hidden lg:inline-flex btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs">
+        <button
+          onClick={() => onTabChange("contact")}
+          className="hidden lg:inline-flex btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none"
+        >
           Get Quote <ArrowRight className="h-3.5 w-3.5" />
-        </a>
-        <button className="lg:hidden text-white p-2" onClick={() => setOpen(true)} aria-label="Open menu">
+        </button>
+        <button className="lg:hidden text-white p-2 bg-transparent border-0 focus:outline-none" onClick={() => setOpen(true)} aria-label="Open menu">
           <Menu />
         </button>
       </div>
@@ -124,16 +134,32 @@ function Navbar() {
         <div className="fixed inset-0 z-[60] lg:hidden" style={{ background: "oklch(0.14 0.04 258 / 0.98)" }}>
           <div className="flex items-center justify-between container-luxe py-4">
             <img src={logo} alt="" className="h-12 w-12 object-contain" />
-            <button className="text-white p-2" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
+            <button className="text-white p-2 bg-transparent border-0 focus:outline-none" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
           </div>
           <div className="container-luxe mt-10 flex flex-col gap-5">
             {NAV.map((n) => (
-              <a key={n.href} href={n.href} onClick={() => setOpen(false)}
-                className="text-2xl font-display text-white/90 hover:text-gold transition-colors">
+              <button
+                key={n.id}
+                onClick={() => {
+                  onTabChange(n.id);
+                  setOpen(false);
+                }}
+                className={`text-2xl font-display text-left cursor-pointer transition-colors bg-transparent border-0 p-0 focus:outline-none ${
+                  activeTab === n.id ? "text-gold font-bold" : "text-white/90 hover:text-gold"
+                }`}
+              >
                 {n.label}
-              </a>
+              </button>
             ))}
-            <a href="#contact" onClick={() => setOpen(false)} className="btn-gold btn-gold-hover mt-4 self-start">Get Quote</a>
+            <button
+              onClick={() => {
+                onTabChange("contact");
+                setOpen(false);
+              }}
+              className="btn-gold btn-gold-hover mt-4 self-start cursor-pointer bg-transparent border-0 focus:outline-none"
+            >
+              Get Quote
+            </button>
           </div>
         </div>
       )}
@@ -162,7 +188,7 @@ function Counter({ end, suffix = "", duration = 2 }: { end: number; suffix?: str
   return <span ref={ref}>{v}{suffix}</span>;
 }
 
-function Hero() {
+function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
@@ -197,10 +223,12 @@ function Hero() {
             </motion.p>
             <motion.div initial="hidden" animate="show" custom={3} variants={fadeUp}
               className="mt-10 flex flex-wrap items-center gap-4">
-              <a href="#contact" className="btn-gold btn-gold-hover">
+              <button onClick={() => onTabChange("contact")} className="btn-gold btn-gold-hover cursor-pointer bg-transparent border-0 focus:outline-none">
                 Get Free Consultation <ArrowRight className="h-4 w-4" />
-              </a>
-              <a href="#portfolio" className="btn-outline-gold hover:bg-white/10">View Portfolio</a>
+              </button>
+              <button onClick={() => onTabChange("portfolio")} className="btn-outline-gold hover:bg-white/10 cursor-pointer bg-transparent border-0 focus:outline-none">
+                View Portfolio
+              </button>
             </motion.div>
 
             <motion.div initial="hidden" animate="show" custom={4} variants={fadeUp}
@@ -247,11 +275,11 @@ function Hero() {
         </div>
       </div>
 
-      <a href="#about" className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 hover:text-gold transition-colors">
+      <button onClick={() => onTabChange("about")} className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 hover:text-gold transition-colors cursor-pointer bg-transparent border-0 p-0 focus:outline-none">
         <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
           <ChevronDown className="h-6 w-6" />
         </motion.div>
-      </a>
+      </button>
     </section>
   );
 }
@@ -303,6 +331,23 @@ function About() {
             Our team combines engineering excellence, innovative design, and superior craftsmanship
             to transform every project into a masterpiece.
           </motion.p>
+
+          {/* Founder Profile */}
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} custom={1.5} variants={fadeUp}
+            className="mt-8 flex flex-col sm:flex-row items-center gap-6 rounded-2xl border-2 border-gold bg-navy text-white p-6 shadow-xl relative overflow-hidden">
+            {/* Subtle gold background glow */}
+            <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
+            <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-gold/5 blur-3xl pointer-events-none" />
+            
+            <img src="/pic 23.jpeg" alt="Syed, Founder" className="h-28 w-28 rounded-full object-cover object-[center_18%] border-2 border-gold shadow-lg shrink-0 relative z-10" />
+            <div className="text-center sm:text-left relative z-10">
+              <div className="text-xs uppercase tracking-[0.25em] text-gold font-bold">Founder & Managing Director</div>
+              <h4 className="font-display text-3xl text-white font-bold mt-1">Syed</h4>
+              <p className="text-sm text-white/80 mt-3 leading-relaxed italic">
+                "Our mission is to combine timeless design with engineering integrity. Every project we undertake is crafted with the highest precision, bringing our clients' dreams to life."
+              </p>
+            </div>
+          </motion.div>
 
           <div className="mt-10 grid grid-cols-2 gap-4">
             {perks.map((p, i) => (
@@ -411,14 +456,28 @@ function Process() {
 /* ---------------- PORTFOLIO ---------------- */
 const CATEGORIES = ["All", "Luxury Villas", "Living Rooms", "Modular Kitchens", "Offices", "Bedrooms", "Commercial"];
 const PORTFOLIO = [
-  { img: heroVilla, cat: "Luxury Villas", title: "Skyline Villa" },
-  { img: livingRoom, cat: "Living Rooms", title: "Golden Lounge" },
-  { img: kitchenImg, cat: "Modular Kitchens", title: "Midnight Kitchen" },
-  { img: officeImg, cat: "Offices", title: "Boardroom Suite" },
-  { img: bedroomImg, cat: "Bedrooms", title: "Velvet Retreat" },
-  { img: commercialImg, cat: "Commercial", title: "Downtown Tower" },
-  { img: livingRoom, cat: "Living Rooms", title: "Marble Salon" },
-  { img: kitchenImg, cat: "Modular Kitchens", title: "Chef's Island" },
+  { img: "/pic 1.jpeg", cat: "Luxury Villas", title: "Modern Elevation" },
+  { img: "/pic2.jpeg", cat: "Living Rooms", title: "Cozy Hearth" },
+  { img: "/pic 3.jpeg", cat: "Modular Kitchens", title: "Gourmet Kitchen" },
+  { img: "/pic 4.jpeg", cat: "Offices", title: "Creative Hub" },
+  { img: "/pic 5.jpeg", cat: "Bedrooms", title: "Serene Oasis" },
+  { img: "/pic 6.jpeg", cat: "Commercial", title: "Boutique Lobby" },
+  { img: "/pic 7.jpeg", cat: "Luxury Villas", title: "Glass Pavilion" },
+  { img: "/pic 8.jpeg", cat: "Living Rooms", title: "Urban Salon" },
+  { img: "/pic 9.jpeg", cat: "Modular Kitchens", title: "Minimalist Cookery" },
+  { img: "/pic 10.jpeg", cat: "Offices", title: "Executive Workspace" },
+  { img: "/pic11.jpeg", cat: "Bedrooms", title: "Golden Suite" },
+  { img: "/pic 12.jpeg", cat: "Commercial", title: "Retail Showroom" },
+  { img: "/pic13.jpeg", cat: "Luxury Villas", title: "Hillside Retreat" },
+  { img: "/pic14.jpeg", cat: "Living Rooms", title: "Minimalist Den" },
+  { img: "/pic 15.jpeg", cat: "Modular Kitchens", title: "Chic Dining Corner" },
+  { img: "/pic 16.jpeg", cat: "Offices", title: "Focus Pod" },
+  { img: "/pic 17.jpeg", cat: "Bedrooms", title: "Dream Chambers" },
+  { img: "/pic18.jpeg", cat: "Commercial", title: "Corporate Atrium" },
+  { img: "/pic 19.jpeg", cat: "Luxury Villas", title: "Infinity Deck" },
+  { img: "/pic20.jpeg", cat: "Living Rooms", title: "Luxe Lounge" },
+  { img: "/pic21.jpeg", cat: "Modular Kitchens", title: "Bright Kitchenette" },
+  { img: "/pic 22.jpeg", cat: "Bedrooms", title: "Warm Sanctuary" },
 ];
 function Portfolio() {
   const [cat, setCat] = useState("All");
@@ -468,12 +527,12 @@ function Portfolio() {
 
 /* ---------------- PROJECTS ---------------- */
 const PROJECTS = [
-  { img: heroVilla, title: "Sky Crest Villa", desc: "A modernist 6,500 sq.ft villa featuring floor-to-ceiling glass, a floating staircase and cantilevered pool deck.", location: "Jubilee Hills, Hyderabad", size: "6,500 sq.ft", time: "14 months" },
-  { img: officeImg, title: "Meridian Corporate HQ", desc: "A warm-wood executive suite designed for a leading fintech, blending Japandi calm with corporate authority.", location: "HITEC City, Hyderabad", size: "18,000 sq.ft", time: "8 months" },
-  { img: kitchenImg, title: "Indigo Culinary Studio", desc: "Navy-and-brass modular kitchen with quartz island, integrated appliances and warm ambient lighting.", location: "Kondapur", size: "420 sq.ft", time: "6 weeks" },
-  { img: bedroomImg, title: "Velvet Master Suite", desc: "A tufted, layered master bedroom finished in bronze, marble and hand-loomed textiles.", location: "Banjara Hills", size: "680 sq.ft", time: "10 weeks" },
+  { img: "/pic 19.jpeg", title: "Sky Crest Villa", desc: "A modernist 6,500 sq.ft villa featuring floor-to-ceiling glass, a floating staircase and cantilevered pool deck.", location: "Jubilee Hills, Hyderabad", size: "6,500 sq.ft", time: "14 months" },
+  { img: "/pic 10.jpeg", title: "Meridian Corporate HQ", desc: "A warm-wood executive suite designed for a leading fintech, blending Japandi calm with corporate authority.", location: "HITEC City, Hyderabad", size: "18,000 sq.ft", time: "8 months" },
+  { img: "/pic 3.jpeg", title: "Indigo Culinary Studio", desc: "Navy-and-brass modular kitchen with quartz island, integrated appliances and warm ambient lighting.", location: "Kondapur", size: "420 sq.ft", time: "6 weeks" },
+  { img: "/pic 22.jpeg", title: "Velvet Master Suite", desc: "A tufted, layered master bedroom finished in bronze, marble and hand-loomed textiles.", location: "Banjara Hills", size: "680 sq.ft", time: "10 weeks" },
 ];
-function Projects() {
+function Projects({ onTabChange }: { onTabChange: (tabId: string) => void }) {
   return (
     <Section id="projects" eyebrow="Featured Projects" title={<>Signature <span className="text-gold-gradient">Projects</span></>}>
       <div className="space-y-16 md:space-y-24">
@@ -495,9 +554,9 @@ function Projects() {
                   </div>
                 ))}
               </dl>
-              <a href="#portfolio" className="mt-8 inline-flex items-center gap-2 text-navy font-semibold group">
+              <button onClick={() => onTabChange("portfolio")} className="mt-8 inline-flex items-center gap-2 text-navy font-semibold group cursor-pointer bg-transparent border-0 focus:outline-none">
                 View Gallery <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </a>
+              </button>
             </div>
           </motion.div>
         ))}
@@ -695,18 +754,20 @@ function Contact() {
 }
 
 /* ---------------- FOOTER ---------------- */
-function Footer() {
+function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
   return (
     <footer className="relative text-white pt-20 pb-8" style={{ background: "var(--gradient-navy)" }}>
       <div className="container-luxe">
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
             <div className="flex items-center gap-4">
-              <img src={logo} alt="Moon Construction & Interiors" className="h-16 w-16 object-contain" />
-              <div>
-                <div className="font-display text-2xl">Moon</div>
-                <div className="text-[11px] tracking-[0.3em] text-gold uppercase">Construction & Interiors</div>
-              </div>
+              <button onClick={() => onTabChange("home")} className="flex items-center gap-4 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none">
+                <img src={logo} alt="Moon Construction & Interiors" className="h-16 w-16 object-contain" />
+                <div>
+                  <div className="font-display text-2xl text-white">Moon</div>
+                  <div className="text-[11px] tracking-[0.3em] text-gold uppercase">Construction & Interiors</div>
+                </div>
+              </button>
             </div>
             <p className="mt-6 max-w-md text-white/70 leading-relaxed">
               Building Spaces. Designing Dreams. Inspiring Futures. Premium construction and
@@ -723,7 +784,13 @@ function Footer() {
           <div>
             <div className="eyebrow mb-4">Quick Links</div>
             <ul className="space-y-2 text-white/70 text-sm">
-              {NAV.map((n) => <li key={n.href}><a href={n.href} className="hover:text-gold transition-colors">{n.label}</a></li>)}
+              {NAV.map((n) => (
+                <li key={n.id}>
+                  <button onClick={() => onTabChange(n.id)} className="hover:text-gold transition-colors cursor-pointer bg-transparent border-0 p-0 text-white/70 text-left">
+                    {n.label}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
@@ -777,23 +844,64 @@ function ScrollBar() {
 }
 
 function Index() {
+  const [activeTab, setActiveTab] = useState("home");
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "home":
+        return <Hero onTabChange={handleTabChange} />;
+      case "about":
+        return (
+          <>
+            <About />
+            <Stats />
+          </>
+        );
+      case "services":
+        return (
+          <>
+            <Services />
+            <Process />
+          </>
+        );
+      case "portfolio":
+        return <Portfolio />;
+      case "projects":
+        return <Projects onTabChange={handleTabChange} />;
+      case "testimonials":
+        return <Testimonials />;
+      case "faq":
+        return <FAQSection />;
+      case "contact":
+        return <Contact />;
+      default:
+        return <Hero onTabChange={handleTabChange} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <ScrollBar />
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-        <Services />
-        <Process />
-        <Portfolio />
-        <Projects />
-        <Stats />
-        <Testimonials />
-        <FAQSection />
-        <Contact />
+      <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
+      <main className="flex-grow pt-20">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            {renderTabContent()}
+          </motion.div>
+        </AnimatePresence>
       </main>
-      <Footer />
+      <Footer onTabChange={handleTabChange} />
       <Floating />
     </div>
   );
