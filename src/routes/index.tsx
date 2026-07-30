@@ -203,7 +203,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8">
             <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6">
-              ✦ Premium Construction & Interior Design
+              âœ¦ Premium Construction & Interior Design
             </motion.div>
             <motion.h1
               initial="hidden" animate="show" custom={1} variants={fadeUp}
@@ -218,7 +218,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
               className="mt-8 max-w-2xl text-white/75 text-base md:text-lg leading-relaxed"
             >
               Delivering premium construction and interior design solutions for homes, villas,
-              apartments, offices, commercial spaces, and turnkey projects — with over 700+
+              apartments, offices, commercial spaces, and turnkey projects â€” with over 700+
               satisfied clients worldwide.
             </motion.p>
             <motion.div initial="hidden" animate="show" custom={3} variants={fadeUp}
@@ -252,23 +252,45 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
             </motion.div>
           </div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
+          <motion.div initial={{ opacity: 0, scale: 0.9, x: 40 }} animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
             className="lg:col-span-4 hidden lg:block">
-            <div className="glass-card rounded-2xl p-8 text-white">
-              <div className="eyebrow mb-4">Since 2015</div>
-              <p className="font-display text-2xl leading-snug">
-                "Engineering excellence meets timeless design — crafted for the way you live."
-              </p>
-              <div className="mt-6 flex items-center gap-3">
-                <div className="flex -space-x-2">
+            <div className="relative glass-card rounded-3xl overflow-hidden text-white shadow-[0_8px_48px_rgba(0,0,0,0.5)]">
+              {/* Gold top accent bar */}
+              <div className="h-1 w-full" style={{ background: "var(--gradient-gold)" }} />
+
+              {/* Founder photo */}
+              <div className="relative">
+                <img
+                  src="/founder.jpg"
+                  alt="Mr. Syed Ghouseuddin â€” Founder & Managing Director"
+                  className="w-full h-72 object-cover object-top"
+                />
+                {/* Gradient overlay at bottom of photo */}
+                <div className="absolute inset-x-0 bottom-0 h-20"
+                  style={{ background: "linear-gradient(to top, oklch(0.16 0.05 258 / 0.98), transparent)" }} />
+              </div>
+
+              {/* Info block */}
+              <div className="px-6 pb-6 -mt-3 relative z-10">
+                <div className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
+                  Founder &amp; Managing Director
+                </div>
+                <h3 className="font-display text-2xl font-bold text-white leading-tight">
+                  Mr. Syed<br />
+                  <span className="text-gold-gradient">Ghouseuddin</span>
+                </h3>
+                <p className="mt-3 text-xs text-white/65 leading-relaxed italic border-l-2 pl-3" style={{ borderColor: "var(--gold)" }}>
+                  "Engineering excellence meets timeless design â€” crafted for the way you live."
+                </p>
+                <div className="mt-4 flex items-center gap-2">
                   {[Award, ShieldCheck, Sparkles].map((I, i) => (
-                    <div key={i} className="h-9 w-9 rounded-full grid place-items-center gold-border" style={{ background: "oklch(0.22 0.06 258 / 0.6)" }}>
-                      <I className="h-4 w-4 text-gold" />
+                    <div key={i} className="h-8 w-8 rounded-full grid place-items-center gold-border" style={{ background: "oklch(0.22 0.06 258 / 0.6)" }}>
+                      <I className="h-3.5 w-3.5 text-gold" />
                     </div>
                   ))}
+                  <div className="text-[10px] text-white/60 ml-1">Since 2015 Â· 10+ Years</div>
                 </div>
-                <div className="text-xs text-white/70">Award-winning craftsmanship</div>
               </div>
             </div>
           </motion.div>
@@ -389,7 +411,7 @@ const SERVICES = [
 function Services() {
   return (
     <Section id="services" eyebrow="What We Do" title={<>Signature <span className="text-gold-gradient">Services</span></>}
-      subtitle="End-to-end solutions crafted with precision — from the first blueprint to the final finish."
+      subtitle="End-to-end solutions crafted with precision â€” from the first blueprint to the final finish."
       dark>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
         {SERVICES.map((s, i) => (
@@ -479,47 +501,444 @@ const PORTFOLIO = [
   { img: "/pic21.jpeg", cat: "Modular Kitchens", title: "Bright Kitchenette" },
   { img: "/pic 22.jpeg", cat: "Bedrooms", title: "Warm Sanctuary" },
 ];
+
+interface VideoEntry {
+  id: string;
+  path: string;      // e.g. /videos/1234_myfilm.mp4
+  filename: string;  // e.g. 1234_myfilm.mp4
+  title: string;
+  category: string;
+}
+
+const VIDEO_CATS = ["Interior Design", "Construction", "Villa Tours", "Kitchen", "Office", "Before & After"];
+const STORAGE_KEY = "moon_portfolio_videos_v2";
+
+/* â”€â”€ Upload Modal â”€â”€ */
+function VideoUploadModal({
+  initial,
+  onSave,
+  onClose,
+}: {
+  initial?: VideoEntry;
+  onSave: (v: VideoEntry) => void;
+  onClose: () => void;
+}) {
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [category, setCategory] = useState(initial?.category ?? VIDEO_CATS[0]);
+  const [file, setFile] = useState<File | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (f: File) => {
+    if (!f.type.startsWith("video/")) { setError("Please select a video file."); return; }
+    setFile(f);
+    setError("");
+    if (!title) setTitle(f.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " "));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) { setError("Please enter a title."); return; }
+
+    // Edit-only mode (no new file, just updating metadata)
+    if (initial && !file) {
+      onSave({ ...initial, title: title.trim(), category });
+      return;
+    }
+
+    if (!file) { setError("Please select a video file."); return; }
+
+    setUploading(true);
+    setProgress(0);
+
+    const fd = new FormData();
+    fd.append("video", file);
+
+    try {
+      // Use XHR for real progress tracking
+      const result = await new Promise<{ path: string; filename: string }>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/upload-video");
+        xhr.upload.onprogress = (ev) => {
+          if (ev.lengthComputable) setProgress(Math.round((ev.loaded / ev.total) * 95));
+        };
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            setProgress(100);
+            resolve(JSON.parse(xhr.responseText));
+          } else {
+            reject(new Error("Upload failed"));
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send(fd);
+      });
+
+      onSave({
+        id: initial?.id ?? Date.now().toString(),
+        path: result.path,
+        filename: result.filename,
+        title: title.trim(),
+        category,
+      });
+    } catch {
+      setError("Upload failed. Please try again.");
+      setUploading(false);
+      setProgress(0);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[90] grid place-items-center p-4"
+      style={{ background: "oklch(0.1 0.04 258 / 0.92)" }}
+      onClick={(e) => { if (e.target === e.currentTarget && !uploading) onClose(); }}
+    >
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25 }}
+        className="w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden"
+      >
+        <div className="h-1 w-full" style={{ background: "var(--gradient-gold)" }} />
+        <form onSubmit={handleSubmit} className="p-8 space-y-5">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-2xl text-navy font-bold">
+              {initial ? "Edit Video" : "Upload Video"}
+            </h3>
+            {!uploading && (
+              <button type="button" onClick={onClose} className="text-navy/50 hover:text-navy bg-transparent border-0 p-1">
+                <X className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+
+          {/* File drop zone â€” only show when adding or replacing */}
+          {!initial && (
+            <div
+              onClick={() => !uploading && fileRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault(); setDragOver(false);
+                const f = e.dataTransfer.files[0];
+                if (f) handleFile(f);
+              }}
+              className={`relative cursor-pointer rounded-2xl border-2 border-dashed transition-all p-8 text-center ${
+                dragOver
+                  ? "border-[color:var(--gold)] bg-[color:var(--gold)]/5"
+                  : file
+                  ? "border-green-400 bg-green-50"
+                  : "border-border hover:border-[color:var(--gold)] hover:bg-[color:var(--gold)]/5"
+              }`}
+            >
+              <input
+                ref={fileRef}
+                type="file"
+                accept="video/*"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+                disabled={uploading}
+              />
+              {file ? (
+                <>
+                  <div className="h-12 w-12 mx-auto rounded-full grid place-items-center mb-3 bg-green-100">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-green-600">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-navy text-sm truncate">{file.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{(file.size / (1024 * 1024)).toFixed(1)} MB Â· Click to change</p>
+                </>
+              ) : (
+                <>
+                  <div className="h-14 w-14 mx-auto rounded-full grid place-items-center mb-3" style={{ background: "var(--gradient-gold)" }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-7 w-7 text-navy">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-navy">Drag & drop your video here</p>
+                  <p className="text-xs text-muted-foreground mt-1">or click to browse Â· MP4, MOV, WebM, AVI supported</p>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Progress bar */}
+          {uploading && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Uploading{progress < 100 ? "â€¦" : " complete!"}</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: "var(--gradient-gold)" }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ ease: "easeOut" }}
+                />
+              </div>
+            </div>
+          )}
+
+          <label className="block">
+            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Video Title *</span>
+            <input
+              type="text"
+              placeholder="e.g. Sky Crest Villa Walkthrough"
+              value={title}
+              onChange={(e) => { setTitle(e.target.value); setError(""); }}
+              disabled={uploading}
+              className="mt-2 block w-full rounded-xl border border-border px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)] focus:ring-2 focus:ring-[color:var(--gold)]/20 transition disabled:opacity-50"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Category</span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              disabled={uploading}
+              className="mt-2 block w-full rounded-xl border border-border px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)] transition disabled:opacity-50"
+            >
+              {VIDEO_CATS.map((c) => <option key={c}>{c}</option>)}
+            </select>
+          </label>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} disabled={uploading}
+              className="flex-1 rounded-xl border border-border py-3 text-sm font-semibold text-navy hover:bg-gray-50 transition bg-transparent disabled:opacity-40">
+              Cancel
+            </button>
+            <button type="submit" disabled={uploading}
+              className="flex-1 rounded-xl py-3 text-sm font-semibold text-navy transition disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ background: "var(--gradient-gold)" }}>
+              {uploading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  Uploadingâ€¦
+                </>
+              ) : initial ? "Save Changes" : "Upload Video"}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
+/* â”€â”€ Video Card â”€â”€ */
+function VideoCard({ video, onEdit, onDelete }: { video: VideoEntry; onEdit: () => void; onDelete: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ duration: 0.5 }}
+      className="group relative rounded-2xl overflow-hidden gold-border shadow-[var(--shadow-luxe)] bg-navy"
+    >
+      <video
+        src={video.path}
+        controls
+        preload="metadata"
+        className="w-full aspect-video object-cover bg-black"
+        playsInline
+      />
+
+      {/* Info bar */}
+      <div className="p-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[10px] uppercase tracking-[0.25em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
+            {video.category}
+          </div>
+          <div className="font-display text-white text-base font-semibold truncate">{video.title}</div>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <button onClick={onEdit} title="Edit"
+            className="h-8 w-8 rounded-lg grid place-items-center text-white/60 hover:text-gold hover:bg-white/10 transition bg-transparent border-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+          </button>
+          <button onClick={onDelete} title="Delete"
+            className="h-8 w-8 rounded-lg grid place-items-center text-white/60 hover:text-red-400 hover:bg-white/10 transition bg-transparent border-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+              <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6M14 11v6M9 6V4h6v2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function Portfolio() {
+  const [tab, setTab] = useState<"photos" | "videos">("photos");
   const [cat, setCat] = useState("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [videos, setVideos] = useState<VideoEntry[]>(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"); } catch { return []; }
+  });
+  const [showModal, setShowModal] = useState(false);
+  const [editVideo, setEditVideo] = useState<VideoEntry | undefined>();
+
+  const saveVideos = (updated: VideoEntry[]) => {
+    setVideos(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
+
+  const handleSave = (v: VideoEntry) => {
+    const updated = editVideo
+      ? videos.map((x) => (x.id === editVideo.id ? v : x))
+      : [...videos, v];
+    saveVideos(updated);
+    setShowModal(false);
+    setEditVideo(undefined);
+  };
+
+  const handleDelete = async (video: VideoEntry) => {
+    if (!confirm("Remove this video?")) return;
+    // Delete file from disk
+    try {
+      await fetch("/api/delete-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: video.filename }),
+      });
+    } catch { /* continue even if file delete fails */ }
+    saveVideos(videos.filter((v) => v.id !== video.id));
+  };
+
   const items = PORTFOLIO.filter((p) => cat === "All" || p.cat === cat);
+
   return (
     <Section id="portfolio" eyebrow="Portfolio" title={<>Selected <span className="text-gold-gradient">Work</span></>}
       subtitle="A curated look at the spaces we've had the privilege to design and build.">
-      <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12">
-        {CATEGORIES.map((c) => (
-          <button key={c} onClick={() => setCat(c)}
-            className={`px-5 py-2.5 rounded-full text-xs md:text-sm font-medium tracking-wide transition-all ${
-              cat === c ? "text-navy shadow-[var(--shadow-gold)]" : "text-navy/70 hover:text-navy border border-border"
+
+      {/* Tab switcher */}
+      <div className="flex justify-center gap-3 mb-10">
+        {(["photos", "videos"] as const).map((t) => (
+          <button key={t} onClick={() => setTab(t)}
+            className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all capitalize ${
+              tab === t ? "text-navy shadow-[var(--shadow-gold)]" : "text-navy/60 hover:text-navy border border-border"
             }`}
-            style={cat === c ? { background: "var(--gradient-gold)" } : undefined}>
-            {c}
+            style={tab === t ? { background: "var(--gradient-gold)" } : undefined}>
+            {t === "photos" ? "ðŸ“· Photos" : "ðŸŽ¬ Videos"}
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[220px] md:auto-rows-[260px] gap-4">
-        {items.map((p, i) => (
-          <motion.button
-            key={i} onClick={() => setLightbox(p.img)}
-            initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }} transition={{ duration: 0.6, delay: (i % 4) * 0.08 }}
-            className={`group relative overflow-hidden rounded-2xl gold-border ${i % 5 === 0 ? "md:row-span-2" : ""}`}
-          >
-            <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(to top, oklch(0.14 0.04 258 / 0.9), transparent 60%)" }} />
-            <div className="absolute inset-x-0 bottom-0 p-5 text-left translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-              <div className="eyebrow !text-[10px]">{p.cat}</div>
-              <div className="font-display text-white text-xl mt-1">{p.title}</div>
-            </div>
-          </motion.button>
-        ))}
-      </div>
 
-      {lightbox && (
-        <div className="fixed inset-0 z-[80] grid place-items-center p-4" style={{ background: "oklch(0.1 0.04 258 / 0.95)" }} onClick={() => setLightbox(null)}>
-          <button className="absolute top-6 right-6 text-white p-2" onClick={() => setLightbox(null)} aria-label="Close"><X /></button>
-          <img src={lightbox} className="max-h-[90vh] max-w-[90vw] rounded-xl gold-border object-contain" alt="" />
-        </div>
+      {/* â”€â”€ PHOTOS TAB â”€â”€ */}
+      {tab === "photos" && (
+        <>
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12">
+            {CATEGORIES.map((c) => (
+              <button key={c} onClick={() => setCat(c)}
+                className={`px-5 py-2.5 rounded-full text-xs md:text-sm font-medium tracking-wide transition-all ${
+                  cat === c ? "text-navy shadow-[var(--shadow-gold)]" : "text-navy/70 hover:text-navy border border-border"
+                }`}
+                style={cat === c ? { background: "var(--gradient-gold)" } : undefined}>
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[220px] md:auto-rows-[260px] gap-4">
+            {items.map((p, i) => (
+              <motion.button
+                key={i} onClick={() => setLightbox(p.img)}
+                initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }} transition={{ duration: 0.6, delay: (i % 4) * 0.08 }}
+                className={`group relative overflow-hidden rounded-2xl gold-border ${i % 5 === 0 ? "md:row-span-2" : ""}`}
+              >
+                <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(to top, oklch(0.14 0.04 258 / 0.9), transparent 60%)" }} />
+                <div className="absolute inset-x-0 bottom-0 p-5 text-left translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                  <div className="eyebrow !text-[10px]">{p.cat}</div>
+                  <div className="font-display text-white text-xl mt-1">{p.title}</div>
+                </div>
+              </motion.button>
+            ))}
+          </div>
+          {lightbox && (
+            <div className="fixed inset-0 z-[80] grid place-items-center p-4" style={{ background: "oklch(0.1 0.04 258 / 0.95)" }} onClick={() => setLightbox(null)}>
+              <button className="absolute top-6 right-6 text-white p-2" onClick={() => setLightbox(null)} aria-label="Close"><X /></button>
+              <img src={lightbox} className="max-h-[90vh] max-w-[90vw] rounded-xl gold-border object-contain" alt="" />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* â”€â”€ VIDEOS TAB â”€â”€ */}
+      {tab === "videos" && (
+        <>
+          <div className="flex items-center justify-between mb-8">
+            <p className="text-muted-foreground text-sm">
+              {videos.length} video{videos.length !== 1 ? "s" : ""} in your collection
+            </p>
+            <button
+              onClick={() => { setEditVideo(undefined); setShowModal(true); }}
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-navy transition hover:opacity-90"
+              style={{ background: "var(--gradient-gold)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-4 w-4">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Upload Video
+            </button>
+          </div>
+
+          {videos.length === 0 ? (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center py-24 rounded-3xl border-2 border-dashed border-border text-center">
+              <div className="h-20 w-20 rounded-full grid place-items-center mb-5" style={{ background: "var(--gradient-gold)" }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-9 w-9 text-navy">
+                  <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+                </svg>
+              </div>
+              <h3 className="font-display text-2xl text-navy font-semibold mb-2">No videos yet</h3>
+              <p className="text-muted-foreground text-sm max-w-xs mb-6">
+                Upload MP4, MOV, WebM or AVI files directly to showcase your project walkthroughs.
+              </p>
+              <button
+                onClick={() => { setEditVideo(undefined); setShowModal(true); }}
+                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-navy"
+                style={{ background: "var(--gradient-gold)" }}
+              >
+                Upload Your First Video
+              </button>
+            </motion.div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videos.map((v) => (
+                <VideoCard
+                  key={v.id}
+                  video={v}
+                  onEdit={() => { setEditVideo(v); setShowModal(true); }}
+                  onDelete={() => handleDelete(v)}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Upload / Edit Modal */}
+      {showModal && (
+        <VideoUploadModal
+          initial={editVideo}
+          onSave={handleSave}
+          onClose={() => { setShowModal(false); setEditVideo(undefined); }}
+        />
       )}
     </Section>
   );
@@ -595,7 +1014,7 @@ function Stats() {
 const TESTIMONIALS = [
   { q: "Our dream villa exceeded expectations. Every detail was executed flawlessly.", n: "Ananya & Rohit S.", r: "Villa Owner" },
   { q: "Excellent quality and a truly professional team from the first sketch to the final walkthrough.", n: "Karthik R.", r: "Managing Director" },
-  { q: "Highly recommended for premium interiors — thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
+  { q: "Highly recommended for premium interiors â€” thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
   { q: "Timely delivery and outstanding workmanship. They set a new standard for our office.", n: "Vikram J.", r: "CEO, Meridian" },
 ];
 function Testimonials() {
@@ -633,12 +1052,12 @@ function Testimonials() {
 
 /* ---------------- FAQ ---------------- */
 const FAQ = [
-  { q: "Do you provide turnkey projects?", a: "Yes — we manage every phase from architecture and civil works to interior installation and final handover, so you can move in without lifting a finger." },
-  { q: "How long does construction take?", a: "Timelines depend on scope. A luxury villa typically completes in 10–14 months, an apartment interior in 6–10 weeks, and commercial fit-outs in 4–8 months." },
+  { q: "Do you provide turnkey projects?", a: "Yes â€” we manage every phase from architecture and civil works to interior installation and final handover, so you can move in without lifting a finger." },
+  { q: "How long does construction take?", a: "Timelines depend on scope. A luxury villa typically completes in 10â€“14 months, an apartment interior in 6â€“10 weeks, and commercial fit-outs in 4â€“8 months." },
   { q: "Can I customize my interiors?", a: "Absolutely. Every project is designed around your lifestyle, preferences and material palette. Nothing we deliver is off-the-shelf." },
   { q: "Do you provide 3D designs?", a: "Yes. Photorealistic 3D walkthroughs are part of every design engagement so you can experience the space before we build it." },
   { q: "Do you work internationally?", a: "We serve clients across India and the Middle East, with select international turnkey projects. Get in touch to discuss your location." },
-  { q: "What is your pricing process?", a: "After an initial consultation and site visit, we share a transparent proposal with itemized scope, materials and timelines — no hidden costs." },
+  { q: "What is your pricing process?", a: "After an initial consultation and site visit, we share a transparent proposal with itemized scope, materials and timelines â€” no hidden costs." },
 ];
 function FAQSection() {
   const [open, setOpen] = useState<number | null>(0);
@@ -705,11 +1124,11 @@ function Contact() {
             <label className="block">
               <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Budget</span>
               <select name="budget" className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)]">
-                <option>Under ₹10 Lakh</option>
-                <option>₹10 – 25 Lakh</option>
-                <option>₹25 – 75 Lakh</option>
-                <option>₹75 Lakh – 2 Cr</option>
-                <option>₹2 Cr+</option>
+                <option>Under â‚¹10 Lakh</option>
+                <option>â‚¹10 â€“ 25 Lakh</option>
+                <option>â‚¹25 â€“ 75 Lakh</option>
+                <option>â‚¹75 Lakh â€“ 2 Cr</option>
+                <option>â‚¹2 Cr+</option>
               </select>
             </label>
           </div>
@@ -719,14 +1138,14 @@ function Contact() {
               className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)] focus:ring-2 focus:ring-[color:var(--gold)]/20 transition" />
           </label>
           <button type="submit" className="btn-gold btn-gold-hover w-full md:w-auto">
-            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent — we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
+            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent â€” we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
           </button>
         </motion.form>
 
         <div className="lg:col-span-2 space-y-5">
           {[
             { icon: Mail, label: "Email", value: "moonconstructionandinteriors@gmail.com", href: "mailto:moonconstructionandinteriors@gmail.com" },
-            { icon: Phone, label: "Phone", value: "+91 — Available on request", href: "#" },
+            { icon: Phone, label: "Phone", value: "+91 90001 69145", href: "tel:+919000169145" },
             { icon: MapPin, label: "Studio", value: "Second Floor, Samridhi Vasyam, D No 1/98/9/3/23, Capital Park Road, Beside Narayana High School, Cyber Hills Colony, VIP Hills, Jaihind Enclave, Madhapur, Hyderabad, Telangana 500081" },
           ].map((c) => (
             <a key={c.label} href={c.href} className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow">
@@ -797,12 +1216,13 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
             <div className="eyebrow mb-4">Contact</div>
             <ul className="space-y-3 text-white/70 text-sm">
               <li className="flex gap-2"><Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" /> moonconstructionandinteriors@gmail.com</li>
-              <li className="flex gap-2"><MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" /> Madhapur, Hyderabad — 500081</li>
+              <li className="flex gap-2"><Phone className="h-4 w-4 text-gold shrink-0 mt-0.5" /> <a href="tel:+919000169145" className="hover:text-gold transition-colors">+91 90001 69145</a></li>
+              <li className="flex gap-2"><MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" /> Madhapur, Hyderabad â€” 500081</li>
             </ul>
           </div>
         </div>
         <div className="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-xs text-white/50">
-          <div>© {new Date().getFullYear()} Moon Construction & Interiors. All rights reserved.</div>
+          <div>Â© {new Date().getFullYear()} Moon Construction & Interiors. All rights reserved.</div>
           <div className="flex gap-5">
             <a href="#" className="hover:text-gold">Privacy Policy</a>
             <a href="#" className="hover:text-gold">Terms</a>
