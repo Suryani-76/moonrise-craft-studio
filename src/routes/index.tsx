@@ -93,50 +93,71 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
   }, []);
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-xl border-b border-white/10"
-      style={{ background: "oklch(0.16 0.05 258 / 0.95)" }}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-[oklch(0.14_0.04_258_/0.75)] backdrop-blur-2xl border-b border-white/15 shadow-[0_10px_40px_rgba(0,0,0,0.4)] py-2"
+          : "bg-white/[0.08] backdrop-blur-xl border-b border-white/10 py-3"
+      }`}
     >
-      <div className="container-luxe flex items-center justify-between py-3">
-        <button onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none">
-          <img src={logo} alt="Moon Construction & Interiors" className="h-12 w-12 md:h-14 md:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]" />
+      <div className="container-luxe flex items-center justify-between">
+        <button onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none group">
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-full bg-gold/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
+            <img src={logo} alt="Moon Construction & Interiors" className="relative h-12 w-12 md:h-14 md:w-14 object-contain drop-shadow-[0_2px_12px_rgba(212,175,55,0.5)]" />
+          </div>
           <div className="hidden sm:block leading-tight">
             <div className="font-display text-white text-lg font-semibold tracking-wide">Moon</div>
-            <div className="text-[10px] tracking-[0.3em] text-gold uppercase">Construction & Interiors</div>
+            <div className="text-[10px] tracking-[0.3em] text-gold uppercase font-medium">Construction &amp; Interiors</div>
           </div>
         </button>
-        <nav className="hidden lg:flex items-center gap-8">
-          {NAV.map((n) => (
-            <button
-              key={n.id}
-              onClick={() => onTabChange(n.id)}
-              className={`group relative text-sm cursor-pointer transition-colors bg-transparent border-0 p-0 focus:outline-none ${
-                activeTab === n.id ? "text-gold font-semibold" : "text-white/85 hover:text-white"
-              }`}
-            >
-              {n.label}
-              <span className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
-                activeTab === n.id ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
-            </button>
-          ))}
+
+        <nav className="hidden lg:flex items-center gap-2 bg-white/5 backdrop-blur-md p-1.5 rounded-full border border-white/15 shadow-inner">
+          {NAV.map((n) => {
+            const isActive = activeTab === n.id;
+            return (
+              <button
+                key={n.id}
+                onClick={() => onTabChange(n.id)}
+                className={`relative px-4 py-1.5 text-xs uppercase tracking-wider font-medium cursor-pointer transition-all duration-300 rounded-full bg-transparent border-0 focus:outline-none ${
+                  isActive ? "text-navy-deep font-semibold" : "text-white/80 hover:text-white"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="navTabGlass"
+                    className="absolute inset-0 rounded-full shadow-md"
+                    style={{ background: "var(--gradient-gold)" }}
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{n.label}</span>
+              </button>
+            );
+          })}
         </nav>
-        <button
-          onClick={() => onTabChange("contact")}
-          className="hidden lg:inline-flex btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none"
-        >
-          Get Quote <ArrowRight className="h-3.5 w-3.5" />
-        </button>
-        <button className="lg:hidden text-white p-2 bg-transparent border-0 focus:outline-none" onClick={() => setOpen(true)} aria-label="Open menu">
+
+        <div className="hidden lg:flex items-center">
+          <button
+            onClick={() => onTabChange("contact")}
+            className="btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none shadow-[0_4px_20px_rgba(212,175,55,0.3)]"
+          >
+            Get Quote <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <button className="lg:hidden text-white p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 cursor-pointer focus:outline-none" onClick={() => setOpen(true)} aria-label="Open menu">
           <Menu />
         </button>
       </div>
+
+      {/* Mobile Glass Menu */}
       {open && (
-        <div className="fixed inset-0 z-[60] lg:hidden" style={{ background: "oklch(0.14 0.04 258 / 0.98)" }}>
-          <div className="flex items-center justify-between container-luxe py-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] lg:hidden bg-black/60 backdrop-blur-2xl">
+          <div className="flex items-center justify-between container-luxe py-4 border-b border-white/10 bg-white/5 backdrop-blur-xl">
             <img src={logo} alt="" className="h-12 w-12 object-contain" />
-            <button className="text-white p-2 bg-transparent border-0 focus:outline-none" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
+            <button className="text-white p-2 rounded-xl bg-white/10 border border-white/20 cursor-pointer focus:outline-none" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
           </div>
-          <div className="container-luxe mt-10 flex flex-col gap-5">
+          <div className="container-luxe mt-8 flex flex-col gap-4">
             {NAV.map((n) => (
               <button
                 key={n.id}
@@ -144,9 +165,10 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
                   onTabChange(n.id);
                   setOpen(false);
                 }}
-                className={`text-2xl font-display text-left cursor-pointer transition-colors bg-transparent border-0 p-0 focus:outline-none ${
-                  activeTab === n.id ? "text-gold font-bold" : "text-white/90 hover:text-gold"
+                className={`text-xl font-display text-left p-3 rounded-2xl cursor-pointer transition-all border focus:outline-none ${
+                  activeTab === n.id ? "text-navy-deep font-bold border-gold/50 shadow-md" : "text-white/90 hover:text-gold border-white/10 bg-white/5"
                 }`}
+                style={activeTab === n.id ? { background: "var(--gradient-gold)" } : undefined}
               >
                 {n.label}
               </button>
@@ -156,15 +178,16 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
                 onTabChange("contact");
                 setOpen(false);
               }}
-              className="btn-gold btn-gold-hover mt-4 self-start cursor-pointer bg-transparent border-0 focus:outline-none"
+              className="btn-gold btn-gold-hover mt-4 w-full justify-center cursor-pointer border-0 focus:outline-none"
             >
               Get Quote
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
     </header>
   );
+
 }
 
 /* ---------------- HERO ---------------- */
