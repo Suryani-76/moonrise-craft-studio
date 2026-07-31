@@ -298,7 +298,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
                   <img
                     src="/founder.jpg"
                     alt="Mr. Syed Ghouseuddin — Founder & Managing Director"
-                    className="w-full h-72 object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-80 object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   />
                   {/* Glass gradient overlay blending photo into card */}
                   <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/40 to-transparent backdrop-blur-[2px]" />
