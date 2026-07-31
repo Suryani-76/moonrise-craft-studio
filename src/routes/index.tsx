@@ -202,8 +202,9 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
       <div className="container-luxe relative z-10 pt-32 pb-20 md:pt-40">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8">
-            <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6">
-              Ã¢Å“Â¦ Premium Construction & Interior Design
+            <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6 flex items-center gap-2">
+              <Sparkles className="h-3.5 w-3.5 text-gold" />
+              <span>Premium Construction &amp; Interior Design</span>
             </motion.div>
             <motion.h1
               initial="hidden" animate="show" custom={1} variants={fadeUp}
@@ -218,7 +219,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
               className="mt-8 max-w-2xl text-white/75 text-base md:text-lg leading-relaxed"
             >
               Delivering premium construction and interior design solutions for homes, villas,
-              apartments, offices, commercial spaces, and turnkey projects Ã¢â‚¬â€ with over 700+
+              apartments, offices, commercial spaces, and turnkey projects — with over 700+
               satisfied clients worldwide.
             </motion.p>
             <motion.div initial="hidden" animate="show" custom={3} variants={fadeUp}
@@ -255,41 +256,46 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
           <motion.div initial={{ opacity: 0, scale: 0.9, x: 40 }} animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
             className="lg:col-span-4 hidden lg:block">
-            <div className="relative glass-card rounded-3xl overflow-hidden text-white shadow-[0_8px_48px_rgba(0,0,0,0.5)]">
-              {/* Gold top accent bar */}
-              <div className="h-1 w-full" style={{ background: "var(--gradient-gold)" }} />
+            <div className="group relative">
+              {/* Floating ambient glow backdrop */}
+              <div className="absolute -inset-1.5 rounded-[2rem] bg-gradient-to-br from-amber-400/30 via-amber-600/20 to-navy-deep/60 blur-xl opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* Founder photo */}
-              <div className="relative">
-                <img
-                  src="/founder.jpg"
-                  alt="Mr. Syed Ghouseuddin Ã¢â‚¬â€ Founder & Managing Director"
-                  className="w-full h-72 object-cover object-top"
-                />
-                {/* Gradient overlay at bottom of photo */}
-                <div className="absolute inset-x-0 bottom-0 h-20"
-                  style={{ background: "linear-gradient(to top, oklch(0.16 0.05 258 / 0.98), transparent)" }} />
-              </div>
+              {/* Glassmorphic Founder Card */}
+              <div className="relative glass-card rounded-[2rem] overflow-hidden text-white shadow-2xl border border-white/20 transition-all duration-500 group-hover:border-[color:var(--gold)]/50">
+                {/* Gold top accent bar */}
+                <div className="h-1 w-full" style={{ background: "var(--gradient-gold)" }} />
 
-              {/* Info block */}
-              <div className="px-6 pb-6 -mt-3 relative z-10">
-                <div className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
-                  Founder &amp; Managing Director
+                {/* Founder photo */}
+                <div className="relative overflow-hidden">
+                  <img
+                    src="/founder.jpg"
+                    alt="Mr. Syed Ghouseuddin — Founder & Managing Director"
+                    className="w-full h-72 object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {/* Glass gradient overlay blending photo into card */}
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/40 to-transparent backdrop-blur-[2px]" />
                 </div>
-                <h3 className="font-display text-2xl font-bold text-white leading-tight">
-                  Mr. Syed<br />
-                  <span className="text-gold-gradient">Ghouseuddin</span>
-                </h3>
-                <p className="mt-3 text-xs text-white/65 leading-relaxed italic border-l-2 pl-3" style={{ borderColor: "var(--gold)" }}>
-                  "Engineering excellence meets timeless design Ã¢â‚¬â€ crafted for the way you live."
-                </p>
-                <div className="mt-4 flex items-center gap-2">
-                  {[Award, ShieldCheck, Sparkles].map((I, i) => (
-                    <div key={i} className="h-8 w-8 rounded-full grid place-items-center gold-border" style={{ background: "oklch(0.22 0.06 258 / 0.6)" }}>
-                      <I className="h-3.5 w-3.5 text-gold" />
-                    </div>
-                  ))}
-                  <div className="text-[10px] text-white/60 ml-1">Since 2015 Ã‚Â· 10+ Years</div>
+
+                {/* Glassy Info block */}
+                <div className="px-6 pb-6 pt-2 relative z-10 bg-white/5 backdrop-blur-md">
+                  <div className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
+                    Founder &amp; Managing Director
+                  </div>
+                  <h3 className="font-display text-2xl font-bold text-white leading-tight">
+                    Mr. Syed<br />
+                    <span className="text-gold-gradient">Ghouseuddin</span>
+                  </h3>
+                  <div className="mt-3 text-xs text-white/80 leading-relaxed italic border-l-2 border-[color:var(--gold)]/80 bg-white/5 backdrop-blur-sm p-3 rounded-r-xl shadow-inner">
+                    "Engineering excellence meets timeless design — crafted for the way you live."
+                  </div>
+                  <div className="mt-4 flex items-center gap-2.5">
+                    {[Award, ShieldCheck, Sparkles].map((I, i) => (
+                      <div key={i} className="h-9 w-9 rounded-xl grid place-items-center bg-white/10 backdrop-blur-md border border-white/20 shadow-md">
+                        <I className="h-4 w-4 text-gold" />
+                      </div>
+                    ))}
+                    <div className="text-[10px] uppercase tracking-wider text-white/70 font-medium ml-1">Since 2015 · 10+ Years</div>
+                  </div>
                 </div>
               </div>
             </div>
