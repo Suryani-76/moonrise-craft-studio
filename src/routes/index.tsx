@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight, ArrowUp, Award, Building2, CheckCircle2, ChevronDown, Clock, Compass,
+  ArrowRight, ArrowUp, Award, Building2, Camera, CheckCircle2, ChevronDown, Clock, Compass,
   Facebook, Hammer, HardHat, Home, Instagram, Layers, Layout, Leaf, Lightbulb,
   Linkedin, Mail, MapPin, Menu, Palette, Phone, Ruler, ShieldCheck,
-  Sofa, Sparkles, Star, Trees, Users, Utensils, X,
+  Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X,
 } from "lucide-react";
 import logo from "@/assets/moon-logo.png";
 import heroVilla from "@/assets/hero-villa.jpg";
@@ -975,11 +975,14 @@ function Portfolio() {
       <div className="flex flex-wrap justify-center gap-3 mb-10">
         {(["photos", "videos", "awards"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all capitalize ${
+            className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all capitalize inline-flex items-center gap-2 ${
               tab === t ? "text-navy shadow-[var(--shadow-gold)]" : "text-navy/60 hover:text-navy border border-border"
             }`}
             style={tab === t ? { background: "var(--gradient-gold)" } : undefined}>
-            {t === "photos" ? "ðŸ“· Photos" : t === "videos" ? "ðŸŽ¬ Videos" : "ðŸ† Awards"}
+            {t === "photos" && <Camera className="h-4 w-4" />}
+            {t === "videos" && <Video className="h-4 w-4" />}
+            {t === "awards" && <Award className="h-4 w-4" />}
+            {t === "photos" ? "Photos" : t === "videos" ? "Videos" : "Awards"}
           </button>
         ))}
       </div>
