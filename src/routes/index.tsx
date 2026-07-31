@@ -93,11 +93,16 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
   }, []);
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-2xl ${
         scrolled
-          ? "bg-[oklch(0.14_0.04_258_/0.75)] backdrop-blur-2xl border-b border-white/15 shadow-[0_10px_40px_rgba(0,0,0,0.4)] py-2"
-          : "bg-white/[0.08] backdrop-blur-xl border-b border-white/10 py-3"
+          ? "border-b border-[color:var(--gold)]/30 shadow-[0_10px_35px_rgba(0,0,0,0.5)] py-2.5"
+          : "border-b border-white/10 py-3.5"
       }`}
+      style={{
+        background: scrolled
+          ? "linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(10, 14, 26, 0.96) 100%)"
+          : "linear-gradient(135deg, rgba(16, 24, 44, 0.82) 0%, rgba(12, 18, 34, 0.85) 100%)",
+      }}
     >
       <div className="container-luxe flex items-center justify-between">
         <button onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none group">
