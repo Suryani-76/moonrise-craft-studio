@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight, ArrowUp, Award, Building2, CheckCircle2, ChevronDown, Clock, Compass,
+  ArrowRight, ArrowUp, Award, Building2, Camera, CheckCircle2, ChevronDown, Clock, Compass,
   Facebook, Hammer, HardHat, Home, Instagram, Layers, Layout, Leaf, Lightbulb,
   Linkedin, Mail, MapPin, Menu, Palette, Phone, Ruler, ShieldCheck,
-  Sofa, Sparkles, Star, Trees, Users, Utensils, X,
+  Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X,
 } from "lucide-react";
 import logo from "@/assets/moon-logo.png";
 import heroVilla from "@/assets/hero-villa.jpg";
@@ -93,50 +93,76 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
   }, []);
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-xl border-b border-white/10"
-      style={{ background: "oklch(0.16 0.05 258 / 0.95)" }}
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 backdrop-blur-2xl ${
+        scrolled
+          ? "border-b border-[color:var(--gold)]/30 shadow-[0_10px_35px_rgba(0,0,0,0.5)] py-2.5"
+          : "border-b border-white/10 py-3.5"
+      }`}
+      style={{
+        background: scrolled
+          ? "linear-gradient(135deg, rgba(14, 20, 36, 0.94) 0%, rgba(10, 14, 26, 0.96) 100%)"
+          : "linear-gradient(135deg, rgba(16, 24, 44, 0.82) 0%, rgba(12, 18, 34, 0.85) 100%)",
+      }}
     >
-      <div className="container-luxe flex items-center justify-between py-3">
-        <button onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none">
-          <img src={logo} alt="Moon Construction & Interiors" className="h-12 w-12 md:h-14 md:w-14 object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]" />
+      <div className="container-luxe flex items-center justify-between">
+        <button onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer text-left bg-transparent border-0 p-0 focus:outline-none group">
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-full bg-gold/20 blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
+            <img src={logo} alt="Moon Construction & Interiors" className="relative h-12 w-12 md:h-14 md:w-14 object-contain drop-shadow-[0_2px_12px_rgba(212,175,55,0.5)]" />
+          </div>
           <div className="hidden sm:block leading-tight">
             <div className="font-display text-white text-lg font-semibold tracking-wide">Moon</div>
-            <div className="text-[10px] tracking-[0.3em] text-gold uppercase">Construction & Interiors</div>
+            <div className="text-[10px] tracking-[0.3em] text-gold uppercase font-medium">Construction &amp; Interiors</div>
           </div>
         </button>
-        <nav className="hidden lg:flex items-center gap-8">
-          {NAV.map((n) => (
-            <button
-              key={n.id}
-              onClick={() => onTabChange(n.id)}
-              className={`group relative text-sm cursor-pointer transition-colors bg-transparent border-0 p-0 focus:outline-none ${
-                activeTab === n.id ? "text-gold font-semibold" : "text-white/85 hover:text-white"
-              }`}
-            >
-              {n.label}
-              <span className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-300 ${
-                activeTab === n.id ? "w-full" : "w-0 group-hover:w-full"
-              }`} />
-            </button>
-          ))}
+
+        <nav className="hidden lg:flex items-center gap-2 bg-white/5 backdrop-blur-md p-1.5 rounded-full border border-white/15 shadow-inner">
+          {NAV.map((n) => {
+            const isActive = activeTab === n.id;
+            return (
+              <button
+                key={n.id}
+                onClick={() => onTabChange(n.id)}
+                className={`relative px-4 py-1.5 text-xs uppercase tracking-wider font-medium cursor-pointer transition-all duration-300 rounded-full bg-transparent border-0 focus:outline-none ${
+                  isActive ? "text-navy-deep font-semibold" : "text-white/80 hover:text-white"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="navTabGlass"
+                    className="absolute inset-0 rounded-full shadow-md"
+                    style={{ background: "var(--gradient-gold)" }}
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{n.label}</span>
+              </button>
+            );
+          })}
         </nav>
-        <button
-          onClick={() => onTabChange("contact")}
-          className="hidden lg:inline-flex btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none"
-        >
-          Get Quote <ArrowRight className="h-3.5 w-3.5" />
-        </button>
-        <button className="lg:hidden text-white p-2 bg-transparent border-0 focus:outline-none" onClick={() => setOpen(true)} aria-label="Open menu">
+
+        <div className="hidden lg:flex items-center">
+          <button
+            onClick={() => onTabChange("contact")}
+            className="btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none shadow-[0_4px_20px_rgba(212,175,55,0.3)]"
+          >
+            Get Quote <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <button className="lg:hidden text-white p-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 cursor-pointer focus:outline-none" onClick={() => setOpen(true)} aria-label="Open menu">
           <Menu />
         </button>
       </div>
+
+      {/* Mobile Glass Menu */}
       {open && (
-        <div className="fixed inset-0 z-[60] lg:hidden" style={{ background: "oklch(0.14 0.04 258 / 0.98)" }}>
-          <div className="flex items-center justify-between container-luxe py-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] lg:hidden bg-black/60 backdrop-blur-2xl">
+          <div className="flex items-center justify-between container-luxe py-4 border-b border-white/10 bg-white/5 backdrop-blur-xl">
             <img src={logo} alt="" className="h-12 w-12 object-contain" />
-            <button className="text-white p-2 bg-transparent border-0 focus:outline-none" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
+            <button className="text-white p-2 rounded-xl bg-white/10 border border-white/20 cursor-pointer focus:outline-none" onClick={() => setOpen(false)} aria-label="Close menu"><X /></button>
           </div>
-          <div className="container-luxe mt-10 flex flex-col gap-5">
+          <div className="container-luxe mt-8 flex flex-col gap-4">
             {NAV.map((n) => (
               <button
                 key={n.id}
@@ -144,9 +170,10 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
                   onTabChange(n.id);
                   setOpen(false);
                 }}
-                className={`text-2xl font-display text-left cursor-pointer transition-colors bg-transparent border-0 p-0 focus:outline-none ${
-                  activeTab === n.id ? "text-gold font-bold" : "text-white/90 hover:text-gold"
+                className={`text-xl font-display text-left p-3 rounded-2xl cursor-pointer transition-all border focus:outline-none ${
+                  activeTab === n.id ? "text-navy-deep font-bold border-gold/50 shadow-md" : "text-white/90 hover:text-gold border-white/10 bg-white/5"
                 }`}
+                style={activeTab === n.id ? { background: "var(--gradient-gold)" } : undefined}
               >
                 {n.label}
               </button>
@@ -156,15 +183,16 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
                 onTabChange("contact");
                 setOpen(false);
               }}
-              className="btn-gold btn-gold-hover mt-4 self-start cursor-pointer bg-transparent border-0 focus:outline-none"
+              className="btn-gold btn-gold-hover mt-4 w-full justify-center cursor-pointer border-0 focus:outline-none"
             >
               Get Quote
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
     </header>
   );
+
 }
 
 /* ---------------- HERO ---------------- */
@@ -202,8 +230,9 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
       <div className="container-luxe relative z-10 pt-32 pb-20 md:pt-40">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8">
-            <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6">
-              âœ¦ Premium Construction & Interior Design
+            <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6 flex items-center gap-2">
+              <Sparkles className="h-3.5 w-3.5 text-gold" />
+              <span>Premium Construction &amp; Interior Design</span>
             </motion.div>
             <motion.h1
               initial="hidden" animate="show" custom={1} variants={fadeUp}
@@ -218,7 +247,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
               className="mt-8 max-w-2xl text-white/75 text-base md:text-lg leading-relaxed"
             >
               Delivering premium construction and interior design solutions for homes, villas,
-              apartments, offices, commercial spaces, and turnkey projects â€” with over 700+
+              apartments, offices, commercial spaces, and turnkey projects — with over 700+
               satisfied clients worldwide.
             </motion.p>
             <motion.div initial="hidden" animate="show" custom={3} variants={fadeUp}
@@ -255,41 +284,46 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
           <motion.div initial={{ opacity: 0, scale: 0.9, x: 40 }} animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
             className="lg:col-span-4 hidden lg:block">
-            <div className="relative glass-card rounded-3xl overflow-hidden text-white shadow-[0_8px_48px_rgba(0,0,0,0.5)]">
-              {/* Gold top accent bar */}
-              <div className="h-1 w-full" style={{ background: "var(--gradient-gold)" }} />
+            <div className="group relative">
+              {/* Floating ambient glow backdrop */}
+              <div className="absolute -inset-1.5 rounded-[2rem] bg-gradient-to-br from-amber-400/30 via-amber-600/20 to-navy-deep/60 blur-xl opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* Founder photo */}
-              <div className="relative">
-                <img
-                  src="/founder.jpg"
-                  alt="Mr. Syed Ghouseuddin â€” Founder & Managing Director"
-                  className="w-full h-72 object-cover object-top"
-                />
-                {/* Gradient overlay at bottom of photo */}
-                <div className="absolute inset-x-0 bottom-0 h-20"
-                  style={{ background: "linear-gradient(to top, oklch(0.16 0.05 258 / 0.98), transparent)" }} />
-              </div>
+              {/* Glassmorphic Founder Card */}
+              <div className="relative glass-card rounded-[2rem] overflow-hidden text-white shadow-2xl border border-white/20 transition-all duration-500 group-hover:border-[color:var(--gold)]/50">
+                {/* Gold top accent bar */}
+                <div className="h-1 w-full" style={{ background: "var(--gradient-gold)" }} />
 
-              {/* Info block */}
-              <div className="px-6 pb-6 -mt-3 relative z-10">
-                <div className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
-                  Founder &amp; Managing Director
+                {/* Founder photo */}
+                <div className="relative overflow-hidden">
+                  <img
+                    src="/founder.jpg"
+                    alt="Mr. Syed Ghouseuddin — Founder & Managing Director"
+                    className="w-full h-72 object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {/* Glass gradient overlay blending photo into card */}
+                  <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/40 to-transparent backdrop-blur-[2px]" />
                 </div>
-                <h3 className="font-display text-2xl font-bold text-white leading-tight">
-                  Mr. Syed<br />
-                  <span className="text-gold-gradient">Ghouseuddin</span>
-                </h3>
-                <p className="mt-3 text-xs text-white/65 leading-relaxed italic border-l-2 pl-3" style={{ borderColor: "var(--gold)" }}>
-                  "Engineering excellence meets timeless design â€” crafted for the way you live."
-                </p>
-                <div className="mt-4 flex items-center gap-2">
-                  {[Award, ShieldCheck, Sparkles].map((I, i) => (
-                    <div key={i} className="h-8 w-8 rounded-full grid place-items-center gold-border" style={{ background: "oklch(0.22 0.06 258 / 0.6)" }}>
-                      <I className="h-3.5 w-3.5 text-gold" />
-                    </div>
-                  ))}
-                  <div className="text-[10px] text-white/60 ml-1">Since 2015 Â· 10+ Years</div>
+
+                {/* Glassy Info block */}
+                <div className="px-6 pb-6 pt-2 relative z-10 bg-white/5 backdrop-blur-md">
+                  <div className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
+                    Founder &amp; Managing Director
+                  </div>
+                  <h3 className="font-display text-2xl font-bold text-white leading-tight">
+                    Mr. Syed<br />
+                    <span className="text-gold-gradient">Ghouseuddin</span>
+                  </h3>
+                  <div className="mt-3 text-xs text-white/80 leading-relaxed italic border-l-2 border-[color:var(--gold)]/80 bg-white/5 backdrop-blur-sm p-3 rounded-r-xl shadow-inner">
+                    "Engineering excellence meets timeless design — crafted for the way you live."
+                  </div>
+                  <div className="mt-4 flex items-center gap-2.5">
+                    {[Award, ShieldCheck, Sparkles].map((I, i) => (
+                      <div key={i} className="h-9 w-9 rounded-xl grid place-items-center bg-white/10 backdrop-blur-md border border-white/20 shadow-md">
+                        <I className="h-4 w-4 text-gold" />
+                      </div>
+                    ))}
+                    <div className="text-[10px] uppercase tracking-wider text-white/70 font-medium ml-1">Since 2015 · 10+ Years</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -411,7 +445,7 @@ const SERVICES = [
 function Services() {
   return (
     <Section id="services" eyebrow="What We Do" title={<>Signature <span className="text-gold-gradient">Services</span></>}
-      subtitle="End-to-end solutions crafted with precision â€” from the first blueprint to the final finish."
+      subtitle="End-to-end solutions crafted with precision Ã¢â‚¬â€ from the first blueprint to the final finish."
       dark>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
         {SERVICES.map((s, i) => (
@@ -513,7 +547,7 @@ interface VideoEntry {
 const VIDEO_CATS = ["Interior Design", "Construction", "Villa Tours", "Kitchen", "Office", "Before & After"];
 const STORAGE_KEY = "moon_portfolio_videos_v2";
 
-/* â”€â”€ Upload Modal â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Upload Modal Ã¢â€â‚¬Ã¢â€â‚¬ */
 function VideoUploadModal({
   initial,
   onSave,
@@ -614,7 +648,7 @@ function VideoUploadModal({
             )}
           </div>
 
-          {/* File drop zone â€” only show when adding or replacing */}
+          {/* File drop zone Ã¢â‚¬â€ only show when adding or replacing */}
           {!initial && (
             <div
               onClick={() => !uploading && fileRef.current?.click()}
@@ -649,7 +683,7 @@ function VideoUploadModal({
                     </svg>
                   </div>
                   <p className="font-semibold text-navy text-sm truncate">{file.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{(file.size / (1024 * 1024)).toFixed(1)} MB Â· Click to change</p>
+                  <p className="text-xs text-muted-foreground mt-1">{(file.size / (1024 * 1024)).toFixed(1)} MB Ã‚Â· Click to change</p>
                 </>
               ) : (
                 <>
@@ -661,7 +695,7 @@ function VideoUploadModal({
                     </svg>
                   </div>
                   <p className="font-semibold text-navy">Drag & drop your video here</p>
-                  <p className="text-xs text-muted-foreground mt-1">or click to browse Â· MP4, MOV, WebM, AVI supported</p>
+                  <p className="text-xs text-muted-foreground mt-1">or click to browse Ã‚Â· MP4, MOV, WebM, AVI supported</p>
                 </>
               )}
             </div>
@@ -671,7 +705,7 @@ function VideoUploadModal({
           {uploading && (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Uploading{progress < 100 ? "â€¦" : " complete!"}</span>
+                <span>Uploading{progress < 100 ? "Ã¢â‚¬Â¦" : " complete!"}</span>
                 <span>{progress}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
@@ -726,7 +760,7 @@ function VideoUploadModal({
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  Uploadingâ€¦
+                  UploadingÃ¢â‚¬Â¦
                 </>
               ) : initial ? "Save Changes" : "Upload Video"}
             </button>
@@ -737,7 +771,7 @@ function VideoUploadModal({
   );
 }
 
-/* â”€â”€ Video Card â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Video Card Ã¢â€â‚¬Ã¢â€â‚¬ */
 function VideoCard({ video, onEdit, onDelete }: { video: VideoEntry; onEdit: () => void; onDelete: () => void }) {
   return (
     <motion.div
@@ -782,8 +816,134 @@ function VideoCard({ video, onEdit, onDelete }: { video: VideoEntry; onEdit: () 
   );
 }
 
+/* ── Awards Gallery ── */
+interface AwardPhoto { id: string; path: string; filename: string; }
+const AWARDS_KEY = "moon_award_photos_v1";
+const DEFAULT_AWARD_PHOTOS: AwardPhoto[] = [
+  { id: "award-1", path: "/awards/award_1.jpg", filename: "award_1.jpg" },
+  { id: "award-2", path: "/awards/award_2.jpg", filename: "award_2.jpg" },
+  { id: "award-3", path: "/awards/award_3.jpg", filename: "award_3.jpg" },
+  { id: "award-4", path: "/awards/award_4.jpg", filename: "award_4.jpg" },
+  { id: "award-5", path: "/awards/award_5.jpg", filename: "award_5.jpg" },
+];
+
+function AwardUploadModal({ onAdd, onClose }: { onAdd: (p: AwardPhoto) => void; onClose: () => void }) {
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [current, setCurrent] = useState(0);
+  const [error, setError] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const addFiles = (fl: FileList | null) => {
+    if (!fl) return;
+    const valid = Array.from(fl).filter(f => f.type.startsWith("image/"));
+    if (!valid.length) { setError("Please select image files."); return; }
+    setFiles(v => [...v, ...valid]);
+    setPreviews(v => [...v, ...valid.map(f => URL.createObjectURL(f))]);
+    setError("");
+  };
+
+  const remove = (i: number) => {
+    setFiles(v => v.filter((_, idx) => idx !== i));
+    setPreviews(v => v.filter((_, idx) => idx !== i));
+  };
+
+  const upload = async () => {
+    if (!files.length) { setError("Please select at least one image."); return; }
+    setUploading(true); setProgress(0); setCurrent(0);
+    for (let i = 0; i < files.length; i++) {
+      setCurrent(i + 1);
+      try {
+        const fd = new FormData();
+        fd.append("image", files[i]);
+        const result = await new Promise<{ path: string; filename: string }>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "/api/upload-award-image");
+          xhr.upload.onprogress = (ev) => { if (ev.lengthComputable) setProgress(Math.round(((i + ev.loaded / ev.total) / files.length) * 100)); };
+          xhr.onload = () => { if (xhr.status === 200) resolve(JSON.parse(xhr.responseText)); else reject(); };
+          xhr.onerror = () => reject();
+          xhr.send(fd);
+        });
+        onAdd({ id: Date.now().toString() + i, path: result.path, filename: result.filename });
+      } catch {
+        setError(`Failed to upload image ${i + 1}.`);
+        setUploading(false); return;
+      }
+    }
+    setProgress(100);
+    setUploading(false);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[90] grid place-items-center p-4" style={{ background: "oklch(0.1 0.04 258 / 0.92)" }}
+      onClick={(e) => { if (e.target === e.currentTarget && !uploading) onClose(); }}>
+      <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25 }}
+        className="w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="h-1 w-full shrink-0" style={{ background: "var(--gradient-gold)" }} />
+        <div className="p-8 space-y-5 overflow-y-auto flex-1">
+          <div className="flex items-center justify-between">
+            <h3 className="font-display text-2xl text-navy font-bold">Add Award Photos</h3>
+            {!uploading && <button type="button" onClick={onClose} className="text-navy/50 hover:text-navy bg-transparent border-0 p-1"><X className="h-5 w-5" /></button>}
+          </div>
+          <div
+            onClick={() => !uploading && fileRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
+            className={`cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all ${dragOver ? "border-[color:var(--gold)] bg-[color:var(--gold)]/5" : "border-border hover:border-[color:var(--gold)]"} ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <div className="h-12 w-12 mx-auto rounded-xl grid place-items-center mb-3" style={{ background: "var(--gradient-gold)" }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-navy">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+            </div>
+            <p className="font-semibold text-navy">Click or drag photos here</p>
+            <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WebP — select multiple at once</p>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" disabled={uploading} onChange={(e) => addFiles(e.target.files)} />
+          {previews.length > 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {previews.map((src, i) => (
+                <div key={i} className="relative rounded-xl overflow-hidden aspect-square group">
+                  <img src={src} className="w-full h-full object-cover" alt="" />
+                  {!uploading && (
+                    <button onClick={() => remove(i)} className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/70 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition border-0">
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {uploading && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-muted-foreground"><span>Uploading {current} of {files.length}…</span><span>{progress}%</span></div>
+              <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                <motion.div className="h-full rounded-full" style={{ background: "var(--gradient-gold)" }} initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ ease: "easeOut" }} />
+              </div>
+            </div>
+          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="flex gap-3 pt-1">
+            <button type="button" onClick={onClose} disabled={uploading} className="flex-1 rounded-xl border border-border py-3 text-sm font-semibold text-navy hover:bg-gray-50 transition bg-transparent disabled:opacity-40">Cancel</button>
+            <button type="button" onClick={upload} disabled={uploading || !files.length}
+              className="flex-1 rounded-xl py-3 text-sm font-semibold text-navy transition flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ background: "var(--gradient-gold)" }}>
+              {uploading ? (<><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Uploading…</>) : `Upload ${files.length || ""} Photo${files.length !== 1 ? "s" : ""}`}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function Portfolio() {
-  const [tab, setTab] = useState<"photos" | "videos">("photos");
+  const [tab, setTab] = useState<"photos" | "videos" | "awards">("photos");
   const [cat, setCat] = useState("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [videos, setVideos] = useState<VideoEntry[]>(() => {
@@ -791,6 +951,27 @@ function Portfolio() {
   });
   const [showModal, setShowModal] = useState(false);
   const [editVideo, setEditVideo] = useState<VideoEntry | undefined>();
+
+  // Awards photo gallery state
+  const [awardPhotos, setAwardPhotos] = useState<AwardPhoto[]>(() => {
+    try {
+      const stored = localStorage.getItem(AWARDS_KEY);
+      return stored ? JSON.parse(stored) : DEFAULT_AWARD_PHOTOS;
+    } catch { return DEFAULT_AWARD_PHOTOS; }
+  });
+  const [showAwardModal, setShowAwardModal] = useState(false);
+  const [awardLightbox, setAwardLightbox] = useState<string | null>(null);
+
+  const saveAwardPhotos = (updated: AwardPhoto[]) => {
+    setAwardPhotos(updated);
+    localStorage.setItem(AWARDS_KEY, JSON.stringify(updated));
+  };
+  const handlePhotoAdd = (p: AwardPhoto) => saveAwardPhotos([...awardPhotos, p]);
+  const handlePhotoDelete = async (photo: AwardPhoto) => {
+    if (!confirm("Remove this photo?")) return;
+    try { await fetch("/api/delete-award-image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ filename: photo.filename }) }); } catch { /* ok */ }
+    saveAwardPhotos(awardPhotos.filter(p => p.id !== photo.id));
+  };
 
   const saveVideos = (updated: VideoEntry[]) => {
     setVideos(updated);
@@ -825,20 +1006,21 @@ function Portfolio() {
     <Section id="portfolio" eyebrow="Portfolio" title={<>Selected <span className="text-gold-gradient">Work</span></>}
       subtitle="A curated look at the spaces we've had the privilege to design and build.">
 
-      {/* Tab switcher */}
-      <div className="flex justify-center gap-3 mb-10">
-        {(["photos", "videos"] as const).map((t) => (
+      <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {(["photos", "videos", "awards"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all capitalize ${
+            className={`px-7 py-2.5 rounded-full text-sm font-semibold tracking-wide transition-all capitalize inline-flex items-center gap-2 ${
               tab === t ? "text-navy shadow-[var(--shadow-gold)]" : "text-navy/60 hover:text-navy border border-border"
             }`}
             style={tab === t ? { background: "var(--gradient-gold)" } : undefined}>
-            {t === "photos" ? "ðŸ“· Photos" : "ðŸŽ¬ Videos"}
+            {t === "photos" && <Camera className="h-4 w-4" />}
+            {t === "videos" && <Video className="h-4 w-4" />}
+            {t === "awards" && <Award className="h-4 w-4" />}
+            {t === "photos" ? "Photos" : t === "videos" ? "Videos" : "Awards"}
           </button>
         ))}
       </div>
 
-      {/* â”€â”€ PHOTOS TAB â”€â”€ */}
       {tab === "photos" && (
         <>
           <div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-12">
@@ -878,7 +1060,7 @@ function Portfolio() {
         </>
       )}
 
-      {/* â”€â”€ VIDEOS TAB â”€â”€ */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ VIDEOS TAB Ã¢â€â‚¬Ã¢â€â‚¬ */}
       {tab === "videos" && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -932,7 +1114,84 @@ function Portfolio() {
         </>
       )}
 
-      {/* Upload / Edit Modal */}
+      {/* ── AWARDS TAB ── */}
+      {tab === "awards" && (
+        <>
+          <div className="flex items-center justify-between mb-8">
+            <p className="text-muted-foreground text-sm">
+              {awardPhotos.length} photo{awardPhotos.length !== 1 ? "s" : ""}
+            </p>
+            <button
+              onClick={() => setShowAwardModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-navy transition hover:opacity-90"
+              style={{ background: "var(--gradient-gold)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-4 w-4">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Photos
+            </button>
+          </div>
+
+          {awardPhotos.length === 0 ? (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center justify-center py-28 rounded-3xl border-2 border-dashed border-border text-center">
+              <div className="h-20 w-20 rounded-full grid place-items-center mb-5" style={{ background: "var(--gradient-gold)" }}>
+                <Award className="h-9 w-9 text-navy" />
+              </div>
+              <h3 className="font-display text-2xl text-navy font-semibold mb-2">No award photos yet</h3>
+              <p className="text-muted-foreground text-sm max-w-xs mb-6">Upload your award ceremony photos and newspaper clippings here.</p>
+              <button onClick={() => setShowAwardModal(true)}
+                className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-navy"
+                style={{ background: "var(--gradient-gold)" }}>
+                Add Your First Photo
+              </button>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {awardPhotos.map((photo, i) => (
+                <motion.div key={photo.id}
+                  initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }} transition={{ duration: 0.5, delay: (i % 4) * 0.07 }}
+                  className="group relative rounded-2xl overflow-hidden gold-border shadow-[var(--shadow-luxe)] aspect-[3/4] cursor-zoom-in"
+                  onClick={() => setAwardLightbox(photo.path)}
+                >
+                  <img src={photo.path} alt={`Award ${i + 1}`} loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: "linear-gradient(to top, oklch(0.14 0.04 258 / 0.7), transparent 60%)" }} />
+                  {/* Delete button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handlePhotoDelete(photo); }}
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition border-0 hover:bg-red-600/80"
+                    title="Remove photo"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                      <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6M9 6V4h6v2" />
+                    </svg>
+                  </button>
+                  {/* Expand icon */}
+                  <div className="absolute bottom-3 right-3 h-7 w-7 rounded-full grid place-items-center bg-white/80 opacity-0 group-hover:opacity-100 transition">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5 text-navy">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* Lightbox */}
+          {awardLightbox && (
+            <div className="fixed inset-0 z-[80] grid place-items-center p-4" style={{ background: "oklch(0.1 0.04 258 / 0.95)" }} onClick={() => setAwardLightbox(null)}>
+              <button className="absolute top-6 right-6 text-white p-2 bg-transparent border-0" onClick={() => setAwardLightbox(null)} aria-label="Close"><X /></button>
+              <img src={awardLightbox} className="max-h-[90vh] max-w-[90vw] rounded-xl gold-border object-contain shadow-2xl" alt="Award" />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Upload / Edit Video Modal */}
       {showModal && (
         <VideoUploadModal
           initial={editVideo}
@@ -940,9 +1199,16 @@ function Portfolio() {
           onClose={() => { setShowModal(false); setEditVideo(undefined); }}
         />
       )}
+
+      {/* Award Photo Upload Modal */}
+      {showAwardModal && (
+        <AwardUploadModal onAdd={handlePhotoAdd} onClose={() => setShowAwardModal(false)} />
+      )}
+
     </Section>
   );
 }
+
 
 /* ---------------- PROJECTS ---------------- */
 const PROJECTS = [
@@ -1014,7 +1280,7 @@ function Stats() {
 const TESTIMONIALS = [
   { q: "Our dream villa exceeded expectations. Every detail was executed flawlessly.", n: "Ananya & Rohit S.", r: "Villa Owner" },
   { q: "Excellent quality and a truly professional team from the first sketch to the final walkthrough.", n: "Karthik R.", r: "Managing Director" },
-  { q: "Highly recommended for premium interiors â€” thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
+  { q: "Highly recommended for premium interiors Ã¢â‚¬â€ thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
   { q: "Timely delivery and outstanding workmanship. They set a new standard for our office.", n: "Vikram J.", r: "CEO, Meridian" },
 ];
 function Testimonials() {
@@ -1052,12 +1318,12 @@ function Testimonials() {
 
 /* ---------------- FAQ ---------------- */
 const FAQ = [
-  { q: "Do you provide turnkey projects?", a: "Yes â€” we manage every phase from architecture and civil works to interior installation and final handover, so you can move in without lifting a finger." },
-  { q: "How long does construction take?", a: "Timelines depend on scope. A luxury villa typically completes in 10â€“14 months, an apartment interior in 6â€“10 weeks, and commercial fit-outs in 4â€“8 months." },
+  { q: "Do you provide turnkey projects?", a: "Yes Ã¢â‚¬â€ we manage every phase from architecture and civil works to interior installation and final handover, so you can move in without lifting a finger." },
+  { q: "How long does construction take?", a: "Timelines depend on scope. A luxury villa typically completes in 10Ã¢â‚¬â€œ14 months, an apartment interior in 6Ã¢â‚¬â€œ10 weeks, and commercial fit-outs in 4Ã¢â‚¬â€œ8 months." },
   { q: "Can I customize my interiors?", a: "Absolutely. Every project is designed around your lifestyle, preferences and material palette. Nothing we deliver is off-the-shelf." },
   { q: "Do you provide 3D designs?", a: "Yes. Photorealistic 3D walkthroughs are part of every design engagement so you can experience the space before we build it." },
   { q: "Do you work internationally?", a: "We serve clients across India and the Middle East, with select international turnkey projects. Get in touch to discuss your location." },
-  { q: "What is your pricing process?", a: "After an initial consultation and site visit, we share a transparent proposal with itemized scope, materials and timelines â€” no hidden costs." },
+  { q: "What is your pricing process?", a: "After an initial consultation and site visit, we share a transparent proposal with itemized scope, materials and timelines Ã¢â‚¬â€ no hidden costs." },
 ];
 function FAQSection() {
   const [open, setOpen] = useState<number | null>(0);
@@ -1124,11 +1390,11 @@ function Contact() {
             <label className="block">
               <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Budget</span>
               <select name="budget" className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)]">
-                <option>Under â‚¹10 Lakh</option>
-                <option>â‚¹10 â€“ 25 Lakh</option>
-                <option>â‚¹25 â€“ 75 Lakh</option>
-                <option>â‚¹75 Lakh â€“ 2 Cr</option>
-                <option>â‚¹2 Cr+</option>
+                <option>Under Ã¢â€šÂ¹10 Lakh</option>
+                <option>Ã¢â€šÂ¹10 Ã¢â‚¬â€œ 25 Lakh</option>
+                <option>Ã¢â€šÂ¹25 Ã¢â‚¬â€œ 75 Lakh</option>
+                <option>Ã¢â€šÂ¹75 Lakh Ã¢â‚¬â€œ 2 Cr</option>
+                <option>Ã¢â€šÂ¹2 Cr+</option>
               </select>
             </label>
           </div>
@@ -1138,7 +1404,7 @@ function Contact() {
               className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)] focus:ring-2 focus:ring-[color:var(--gold)]/20 transition" />
           </label>
           <button type="submit" className="btn-gold btn-gold-hover w-full md:w-auto">
-            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent â€” we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
+            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent Ã¢â‚¬â€ we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
           </button>
         </motion.form>
 
@@ -1217,12 +1483,12 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
             <ul className="space-y-3 text-white/70 text-sm">
               <li className="flex gap-2"><Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" /> moonconstructionandinteriors@gmail.com</li>
               <li className="flex gap-2"><Phone className="h-4 w-4 text-gold shrink-0 mt-0.5" /> <a href="tel:+919000169145" className="hover:text-gold transition-colors">+91 90001 69145</a></li>
-              <li className="flex gap-2"><MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" /> Madhapur, Hyderabad â€” 500081</li>
+              <li className="flex gap-2"><MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" /> Madhapur, Hyderabad Ã¢â‚¬â€ 500081</li>
             </ul>
           </div>
         </div>
         <div className="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-xs text-white/50">
-          <div>Â© {new Date().getFullYear()} Moon Construction & Interiors. All rights reserved.</div>
+          <div>Ã‚Â© {new Date().getFullYear()} Moon Construction & Interiors. All rights reserved.</div>
           <div className="flex gap-5">
             <a href="#" className="hover:text-gold">Privacy Policy</a>
             <a href="#" className="hover:text-gold">Terms</a>
