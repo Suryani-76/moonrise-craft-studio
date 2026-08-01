@@ -227,7 +227,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
         }} />
       </div>
 
-      <div className="container-luxe relative z-10 pt-32 pb-20 md:pt-40">
+      <div className="container-luxe relative z-10 pt-20 pb-20 md:pt-24">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8">
             <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6 flex items-center gap-2">
@@ -298,7 +298,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
                   <img
                     src="/founder.jpg"
                     alt="Mr. Syed Ghouseuddin — Founder & Managing Director"
-                    className="w-full h-72 object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-80 object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   />
                   {/* Glass gradient overlay blending photo into card */}
                   <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/40 to-transparent backdrop-blur-[2px]" />
