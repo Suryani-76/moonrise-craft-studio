@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLocation, useRouter } from "@tanstack/react-router";
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -1529,11 +1529,19 @@ function ScrollBar() {
   );
 }
 
-function Index() {
-  const [activeTab, setActiveTab] = useState("home");
+export const VALID_TABS = ["home", "about", "services", "portfolio", "projects", "testimonials", "faq", "contact"];
+
+export function Index() {
+  const router = useRouter();
+  const location = useLocation();
+  const activeTab = location.pathname.split("/").filter(Boolean)[0] ?? "home";
 
   const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
+    if (tabId === "home") {
+      router.navigate({ to: "/" });
+    } else {
+      router.navigate({ to: "/$tab", params: { tab: tabId } });
+    }
     window.scrollTo({ top: 0, behavior: "instant" });
   };
 
