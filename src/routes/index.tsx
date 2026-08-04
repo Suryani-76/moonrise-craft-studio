@@ -1768,7 +1768,7 @@ function ScrollBar() {
   );
 }
 
-export const VALID_TABS = ["home", "about", "services", "portfolio", "projects", "testimonials", "faq", "contact"];
+export const VALID_TABS = ["home", "about", "services", "awards", "portfolio", "projects", "testimonials", "faq", "contact"];
 
 export function Index() {
   const router = useRouter();
