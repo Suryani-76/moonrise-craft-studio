@@ -76,7 +76,8 @@ const NAV = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
   { id: "services", label: "Services" },
-  { id: "portfolio", label: "Portfolio" },
+  { id: "portfolio", label: "Gallery" },
+  { id: "awards", label: "Awards" },
   { id: "projects", label: "Projects" },
   { id: "testimonials", label: "Testimonials" },
   { id: "faq", label: "FAQ" },
@@ -445,7 +446,7 @@ const SERVICES = [
 function Services() {
   return (
     <Section id="services" eyebrow="What We Do" title={<>Signature <span className="text-gold-gradient">Services</span></>}
-      subtitle="End-to-end solutions crafted with precision Ã¢â‚¬â€ from the first blueprint to the final finish."
+      subtitle="End-to-end solutions crafted with precision — from the first blueprint to the final finish."
       dark>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
         {SERVICES.map((s, i) => (
@@ -547,7 +548,7 @@ interface VideoEntry {
 const VIDEO_CATS = ["Interior Design", "Construction", "Villa Tours", "Kitchen", "Office", "Before & After"];
 const STORAGE_KEY = "moon_portfolio_videos_v2";
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Upload Modal Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Upload Modal ── */
 function VideoUploadModal({
   initial,
   onSave,
@@ -648,7 +649,7 @@ function VideoUploadModal({
             )}
           </div>
 
-          {/* File drop zone Ã¢â‚¬â€ only show when adding or replacing */}
+          {/* File drop zone — only show when adding or replacing */}
           {!initial && (
             <div
               onClick={() => !uploading && fileRef.current?.click()}
@@ -683,7 +684,7 @@ function VideoUploadModal({
                     </svg>
                   </div>
                   <p className="font-semibold text-navy text-sm truncate">{file.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{(file.size / (1024 * 1024)).toFixed(1)} MB Ã‚Â· Click to change</p>
+                  <p className="text-xs text-muted-foreground mt-1">{(file.size / (1024 * 1024)).toFixed(1)} MB · Click to change</p>
                 </>
               ) : (
                 <>
@@ -695,7 +696,7 @@ function VideoUploadModal({
                     </svg>
                   </div>
                   <p className="font-semibold text-navy">Drag & drop your video here</p>
-                  <p className="text-xs text-muted-foreground mt-1">or click to browse Ã‚Â· MP4, MOV, WebM, AVI supported</p>
+                  <p className="text-xs text-muted-foreground mt-1">or click to browse · MP4, MOV, WebM, AVI supported</p>
                 </>
               )}
             </div>
@@ -705,7 +706,7 @@ function VideoUploadModal({
           {uploading && (
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Uploading{progress < 100 ? "Ã¢â‚¬Â¦" : " complete!"}</span>
+                <span>Uploading{progress < 100 ? "..." : " complete!"}</span>
                 <span>{progress}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
@@ -760,7 +761,7 @@ function VideoUploadModal({
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  UploadingÃ¢â‚¬Â¦
+                  Uploading...
                 </>
               ) : initial ? "Save Changes" : "Upload Video"}
             </button>
@@ -771,7 +772,7 @@ function VideoUploadModal({
   );
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Video Card Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Video Card ── */
 function VideoCard({ video, onEdit, onDelete }: { video: VideoEntry; onEdit: () => void; onDelete: () => void }) {
   return (
     <motion.div
@@ -813,6 +814,87 @@ function VideoCard({ video, onEdit, onDelete }: { video: VideoEntry; onEdit: () 
         </div>
       </div>
     </motion.div>
+  );
+}
+
+/* ── Awards Marquee (home page) ── */
+function AwardsMarquee() {
+  const photos: AwardPhoto[] = (() => {
+    try {
+      const stored = localStorage.getItem(AWARDS_KEY);
+      const parsed: AwardPhoto[] = stored ? JSON.parse(stored) : DEFAULT_AWARD_PHOTOS;
+      return parsed.length > 0 ? parsed : DEFAULT_AWARD_PHOTOS;
+    } catch { return DEFAULT_AWARD_PHOTOS; }
+  })();
+
+  // Duplicate items so the loop feels seamless
+  const items = [...photos, ...photos, ...photos];
+
+  return (
+    <section className="relative py-16 overflow-hidden" style={{ background: "var(--gradient-navy)" }}>
+      {/* Section header */}
+      <motion.div
+        initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
+        className="text-center mb-10 px-4"
+      >
+        <div className="eyebrow mb-3 flex items-center justify-center gap-2">
+          <Award className="h-3.5 w-3.5 text-gold" />
+          <span>Recognition &amp; Awards</span>
+        </div>
+        <h2 className="font-display text-3xl md:text-4xl text-white font-semibold">
+          Our <span className="text-gold-gradient">Achievements</span>
+        </h2>
+      </motion.div>
+
+      {/* Marquee track */}
+      <div className="relative">
+        {/* Edge fades */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-32 z-10"
+          style={{ background: "linear-gradient(to right, var(--navy-deep, #0a0e1a) 0%, transparent 100%)" }} />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-32 z-10"
+          style={{ background: "linear-gradient(to left, var(--navy-deep, #0a0e1a) 0%, transparent 100%)" }} />
+
+        <div
+          className="flex gap-4 awards-marquee-track"
+          style={{
+            width: "max-content",
+            animation: `awardsScroll ${photos.length * 4}s linear infinite`,
+          }}
+        >
+          {items.map((photo, i) => (
+            <div
+              key={`${photo.id}-${i}`}
+              className="relative shrink-0 rounded-2xl overflow-hidden gold-border shadow-[var(--shadow-luxe)] group"
+              style={{ width: "220px", height: "280px" }}
+            >
+              <img
+                src={photo.path}
+                alt={`Award ${(i % photos.length) + 1}`}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                loading="lazy"
+              />
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: "linear-gradient(to top, oklch(0.14 0.04 258 / 0.7), transparent 60%)" }}
+              />
+              <div className="absolute bottom-0 inset-x-0 p-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
+                <div className="text-[10px] uppercase tracking-widest text-gold font-semibold">Award</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes awardsScroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(calc(-100% / 3)); }
+        }
+        .awards-marquee-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+    </section>
   );
 }
 
@@ -921,7 +1003,7 @@ function AwardUploadModal({ onAdd, onClose }: { onAdd: (p: AwardPhoto) => void; 
           )}
           {uploading && (
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground"><span>Uploading {current} of {files.length}…</span><span>{progress}%</span></div>
+              <div className="flex justify-between text-xs text-muted-foreground"><span>Uploading {current} of {files.length}...</span><span>{progress}%</span></div>
               <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
                 <motion.div className="h-full rounded-full" style={{ background: "var(--gradient-gold)" }} initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ ease: "easeOut" }} />
               </div>
@@ -933,12 +1015,118 @@ function AwardUploadModal({ onAdd, onClose }: { onAdd: (p: AwardPhoto) => void; 
             <button type="button" onClick={upload} disabled={uploading || !files.length}
               className="flex-1 rounded-xl py-3 text-sm font-semibold text-navy transition flex items-center justify-center gap-2 disabled:opacity-50"
               style={{ background: "var(--gradient-gold)" }}>
-              {uploading ? (<><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Uploading…</>) : `Upload ${files.length || ""} Photo${files.length !== 1 ? "s" : ""}`}
+              {uploading ? (<><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" /></svg>Uploading...</>) : `Upload ${files.length || ""} Photo${files.length !== 1 ? "s" : ""}`}
             </button>
           </div>
         </div>
       </motion.div>
     </div>
+  );
+}
+
+/* ---------------- AWARDS PAGE ---------------- */
+function AwardsPage() {
+  const [awardPhotos, setAwardPhotos] = useState<AwardPhoto[]>(() => {
+    try {
+      const stored = localStorage.getItem(AWARDS_KEY);
+      return stored ? JSON.parse(stored) : DEFAULT_AWARD_PHOTOS;
+    } catch { return DEFAULT_AWARD_PHOTOS; }
+  });
+  const [showAwardModal, setShowAwardModal] = useState(false);
+  const [awardLightbox, setAwardLightbox] = useState<string | null>(null);
+
+  const saveAwardPhotos = (updated: AwardPhoto[]) => {
+    setAwardPhotos(updated);
+    localStorage.setItem(AWARDS_KEY, JSON.stringify(updated));
+  };
+  const handlePhotoAdd = (p: AwardPhoto) => saveAwardPhotos([...awardPhotos, p]);
+  const handlePhotoDelete = async (photo: AwardPhoto) => {
+    if (!confirm("Remove this photo?")) return;
+    try { await fetch("/api/delete-award-image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ filename: photo.filename }) }); } catch { /* ok */ }
+    saveAwardPhotos(awardPhotos.filter(p => p.id !== photo.id));
+  };
+
+  return (
+    <Section
+      id="awards"
+      eyebrow="Recognition & Awards"
+      title={<>Our <span className="text-gold-gradient">Awards</span></>}
+      subtitle="Celebrating milestones of excellence, trust, and craftsmanship recognized across the industry."
+    >
+      <div className="flex items-center justify-between mb-8">
+        <p className="text-muted-foreground text-sm">
+          {awardPhotos.length} photo{awardPhotos.length !== 1 ? "s" : ""}
+        </p>
+        <button
+          onClick={() => setShowAwardModal(true)}
+          className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-navy transition hover:opacity-90"
+          style={{ background: "var(--gradient-gold)" }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-4 w-4">
+            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Add Photos
+        </button>
+      </div>
+
+      {awardPhotos.length === 0 ? (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center py-28 rounded-3xl border-2 border-dashed border-border text-center">
+          <div className="h-20 w-20 rounded-full grid place-items-center mb-5" style={{ background: "var(--gradient-gold)" }}>
+            <Award className="h-9 w-9 text-navy" />
+          </div>
+          <h3 className="font-display text-2xl text-navy font-semibold mb-2">No award photos yet</h3>
+          <p className="text-muted-foreground text-sm max-w-xs mb-6">Upload your award ceremony photos and newspaper clippings here.</p>
+          <button onClick={() => setShowAwardModal(true)}
+            className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-navy"
+            style={{ background: "var(--gradient-gold)" }}>
+            Add Your First Photo
+          </button>
+        </motion.div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {awardPhotos.map((photo, i) => (
+            <motion.div key={photo.id}
+              initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }} transition={{ duration: 0.5, delay: (i % 4) * 0.07 }}
+              className="group relative rounded-2xl overflow-hidden gold-border shadow-[var(--shadow-luxe)] aspect-[3/4] cursor-zoom-in"
+              onClick={() => setAwardLightbox(photo.path)}
+            >
+              <img src={photo.path} alt={`Award ${i + 1}`} loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: "linear-gradient(to top, oklch(0.14 0.04 258 / 0.7), transparent 60%)" }} />
+              <button
+                onClick={(e) => { e.stopPropagation(); handlePhotoDelete(photo); }}
+                className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 text-white grid place-items-center opacity-0 group-hover:opacity-100 transition border-0 hover:bg-red-600/80"
+                title="Remove photo"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                  <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6M9 6V4h6v2" />
+                </svg>
+              </button>
+              <div className="absolute bottom-3 right-3 h-7 w-7 rounded-full grid place-items-center bg-white/80 opacity-0 group-hover:opacity-100 transition">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3.5 w-3.5 text-navy">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                </svg>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {awardLightbox && (
+        <div className="fixed inset-0 z-[80] grid place-items-center p-4" style={{ background: "oklch(0.1 0.04 258 / 0.95)" }} onClick={() => setAwardLightbox(null)}>
+          <button className="absolute top-6 right-6 text-white p-2 bg-transparent border-0" onClick={() => setAwardLightbox(null)} aria-label="Close"><X /></button>
+          <img src={awardLightbox} className="max-h-[90vh] max-w-[90vw] rounded-xl gold-border object-contain shadow-2xl" alt="Award" />
+        </div>
+      )}
+
+      {showAwardModal && (
+        <AwardUploadModal onAdd={handlePhotoAdd} onClose={() => setShowAwardModal(false)} />
+      )}
+    </Section>
   );
 }
 
@@ -1060,7 +1248,7 @@ function Portfolio() {
         </>
       )}
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ VIDEOS TAB Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* VIDEOS TAB */}
       {tab === "videos" && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -1114,7 +1302,7 @@ function Portfolio() {
         </>
       )}
 
-      {/* ── AWARDS TAB ── */}
+      {/* AWARDS TAB */}
       {tab === "awards" && (
         <>
           <div className="flex items-center justify-between mb-8">
@@ -1280,7 +1468,7 @@ function Stats() {
 const TESTIMONIALS = [
   { q: "Our dream villa exceeded expectations. Every detail was executed flawlessly.", n: "Ananya & Rohit S.", r: "Villa Owner" },
   { q: "Excellent quality and a truly professional team from the first sketch to the final walkthrough.", n: "Karthik R.", r: "Managing Director" },
-  { q: "Highly recommended for premium interiors Ã¢â‚¬â€ thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
+  { q: "Highly recommended for premium interiors — thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
   { q: "Timely delivery and outstanding workmanship. They set a new standard for our office.", n: "Vikram J.", r: "CEO, Meridian" },
 ];
 function Testimonials() {
@@ -1318,12 +1506,12 @@ function Testimonials() {
 
 /* ---------------- FAQ ---------------- */
 const FAQ = [
-  { q: "Do you provide turnkey projects?", a: "Yes Ã¢â‚¬â€ we manage every phase from architecture and civil works to interior installation and final handover, so you can move in without lifting a finger." },
-  { q: "How long does construction take?", a: "Timelines depend on scope. A luxury villa typically completes in 10Ã¢â‚¬â€œ14 months, an apartment interior in 6Ã¢â‚¬â€œ10 weeks, and commercial fit-outs in 4Ã¢â‚¬â€œ8 months." },
+  { q: "Do you provide turnkey projects?", a: "Yes — we manage every phase from architecture and civil works to interior installation and final handover, so you can move in without lifting a finger." },
+  { q: "How long does construction take?", a: "Timelines depend on scope. A luxury villa typically completes in 10–14 months, an apartment interior in 6–10 weeks, and commercial fit-outs in 4–8 months." },
   { q: "Can I customize my interiors?", a: "Absolutely. Every project is designed around your lifestyle, preferences and material palette. Nothing we deliver is off-the-shelf." },
   { q: "Do you provide 3D designs?", a: "Yes. Photorealistic 3D walkthroughs are part of every design engagement so you can experience the space before we build it." },
   { q: "Do you work internationally?", a: "We serve clients across India and the Middle East, with select international turnkey projects. Get in touch to discuss your location." },
-  { q: "What is your pricing process?", a: "After an initial consultation and site visit, we share a transparent proposal with itemized scope, materials and timelines Ã¢â‚¬â€ no hidden costs." },
+  { q: "What is your pricing process?", a: "After an initial consultation and site visit, we share a transparent proposal with itemized scope, materials and timelines — no hidden costs." },
 ];
 function FAQSection() {
   const [open, setOpen] = useState<number | null>(0);
@@ -1390,11 +1578,11 @@ function Contact() {
             <label className="block">
               <span className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Budget</span>
               <select name="budget" className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)]">
-                <option>Under Ã¢â€šÂ¹10 Lakh</option>
-                <option>Ã¢â€šÂ¹10 Ã¢â‚¬â€œ 25 Lakh</option>
-                <option>Ã¢â€šÂ¹25 Ã¢â‚¬â€œ 75 Lakh</option>
-                <option>Ã¢â€šÂ¹75 Lakh Ã¢â‚¬â€œ 2 Cr</option>
-                <option>Ã¢â€šÂ¹2 Cr+</option>
+                <option>Under ₹10 Lakh</option>
+                <option>₹10 – 25 Lakh</option>
+                <option>₹25 – 75 Lakh</option>
+                <option>₹75 Lakh – 2 Cr</option>
+                <option>₹2 Cr+</option>
               </select>
             </label>
           </div>
@@ -1404,26 +1592,55 @@ function Contact() {
               className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)] focus:ring-2 focus:ring-[color:var(--gold)]/20 transition" />
           </label>
           <button type="submit" className="btn-gold btn-gold-hover w-full md:w-auto">
-            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent Ã¢â‚¬â€ we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
+            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent — we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
           </button>
         </motion.form>
 
         <div className="lg:col-span-2 space-y-5">
-          {[
-            { icon: Mail, label: "Email", value: "moonconstructionandinteriors@gmail.com", href: "mailto:moonconstructionandinteriors@gmail.com" },
-            { icon: Phone, label: "Phone", value: "+91 90001 69145", href: "tel:+919000169145" },
-            { icon: MapPin, label: "Studio", value: "Second Floor, Samridhi Vasyam, D No 1/98/9/3/23, Capital Park Road, Beside Narayana High School, Cyber Hills Colony, VIP Hills, Jaihind Enclave, Madhapur, Hyderabad, Telangana 500081" },
-          ].map((c) => (
-            <a key={c.label} href={c.href} className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow">
-              <div className="h-11 w-11 shrink-0 rounded-xl grid place-items-center" style={{ background: "var(--gradient-gold)" }}>
-                <c.icon className="h-5 w-5 text-navy" />
-              </div>
-              <div>
-                <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">{c.label}</div>
-                <div className="mt-1 text-sm text-navy font-medium leading-relaxed">{c.value}</div>
-              </div>
-            </a>
-          ))}
+          {/* Email */}
+          <a
+            href="mailto:moonconstructionandinteriors@gmail.com"
+            onClick={(e) => { e.preventDefault(); window.open("mailto:moonconstructionandinteriors@gmail.com", "_self"); }}
+            className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow cursor-pointer"
+          >
+            <div className="h-11 w-11 shrink-0 rounded-xl grid place-items-center" style={{ background: "var(--gradient-gold)" }}>
+              <Mail className="h-5 w-5 text-navy" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Email</div>
+              <div className="mt-1 text-sm text-navy font-medium leading-relaxed">moonconstructionandinteriors@gmail.com</div>
+            </div>
+          </a>
+
+          {/* Phone */}
+          <a
+            href="tel:+919000169145"
+            className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow"
+          >
+            <div className="h-11 w-11 shrink-0 rounded-xl grid place-items-center" style={{ background: "var(--gradient-gold)" }}>
+              <Phone className="h-5 w-5 text-navy" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Phone</div>
+              <div className="mt-1 text-sm text-navy font-medium leading-relaxed">+91 90001 69145</div>
+            </div>
+          </a>
+
+          {/* Location */}
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=Samridhi+Vasyam+Capital+Park+Road+Madhapur+Hyderabad+500081"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow"
+          >
+            <div className="h-11 w-11 shrink-0 rounded-xl grid place-items-center" style={{ background: "var(--gradient-gold)" }}>
+              <MapPin className="h-5 w-5 text-navy" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Studio</div>
+              <div className="mt-1 text-sm text-navy font-medium leading-relaxed">Second Floor, Samridhi Vasyam, D No 1/98/9/3/23, Capital Park Road, Beside Narayana High School, Cyber Hills Colony, VIP Hills, Jaihind Enclave, Madhapur, Hyderabad, Telangana 500081</div>
+            </div>
+          </a>
           <div className="rounded-2xl overflow-hidden gold-border h-64">
             <iframe
               title="Studio location"
@@ -1481,14 +1698,36 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
           <div>
             <div className="eyebrow mb-4">Contact</div>
             <ul className="space-y-3 text-white/70 text-sm">
-              <li className="flex gap-2"><Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" /> moonconstructionandinteriors@gmail.com</li>
-              <li className="flex gap-2"><Phone className="h-4 w-4 text-gold shrink-0 mt-0.5" /> <a href="tel:+919000169145" className="hover:text-gold transition-colors">+91 90001 69145</a></li>
-              <li className="flex gap-2"><MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" /> Madhapur, Hyderabad Ã¢â‚¬â€ 500081</li>
+              <li className="flex gap-2">
+                <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <a
+                  href="mailto:moonconstructionandinteriors@gmail.com"
+                  onClick={(e) => { e.preventDefault(); window.open("mailto:moonconstructionandinteriors@gmail.com", "_self"); }}
+                  className="hover:text-gold transition-colors cursor-pointer"
+                >
+                  moonconstructionandinteriors@gmail.com
+                </a>
+              </li>
+              <li className="flex gap-2">
+                <Phone className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <a href="tel:+919000169145" className="hover:text-gold transition-colors">+91 90001 69145</a>
+              </li>
+              <li className="flex gap-2">
+                <MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Samridhi+Vasyam+Capital+Park+Road+Madhapur+Hyderabad+500081"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-gold transition-colors"
+                >
+                  Madhapur, Hyderabad — 500081
+                </a>
+              </li>
             </ul>
           </div>
         </div>
         <div className="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-xs text-white/50">
-          <div>Ã‚Â© {new Date().getFullYear()} Moon Construction & Interiors. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} Moon Construction & Interiors. All rights reserved.</div>
           <div className="flex gap-5">
             <a href="#" className="hover:text-gold">Privacy Policy</a>
             <a href="#" className="hover:text-gold">Terms</a>
@@ -1548,7 +1787,12 @@ export function Index() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "home":
-        return <Hero onTabChange={handleTabChange} />;
+        return (
+          <>
+            <Hero onTabChange={handleTabChange} />
+            <AwardsMarquee />
+          </>
+        );
       case "about":
         return (
           <>
@@ -1563,6 +1807,8 @@ export function Index() {
             <Process />
           </>
         );
+      case "awards":
+        return <AwardsPage />;
       case "portfolio":
         return <Portfolio />;
       case "projects":
