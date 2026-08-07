@@ -2,7 +2,7 @@ import { createFileRoute, useLocation, useRouter } from "@tanstack/react-router"
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight, ArrowUp, Award, Building2, Camera, CheckCircle2, ChevronDown, Clock, Compass,
+  ArrowRight, ArrowUp, Award, Building2, Camera, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Clock, Compass,
   Facebook, Hammer, HardHat, Home, Instagram, Layers, Layout, Leaf, Lightbulb,
   Linkedin, Mail, MapPin, Menu, Palette, Phone, Ruler, ShieldCheck,
   Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X,
@@ -1466,39 +1466,142 @@ function Stats() {
 
 /* ---------------- TESTIMONIALS ---------------- */
 const TESTIMONIALS = [
-  { q: "Our dream villa exceeded expectations. Every detail was executed flawlessly.", n: "Ananya & Rohit S.", r: "Villa Owner" },
-  { q: "Excellent quality and a truly professional team from the first sketch to the final walkthrough.", n: "Karthik R.", r: "Managing Director" },
-  { q: "Highly recommended for premium interiors — thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner" },
-  { q: "Timely delivery and outstanding workmanship. They set a new standard for our office.", n: "Vikram J.", r: "CEO, Meridian" },
+  { q: "Our dream villa exceeded expectations. Every detail was executed flawlessly with unbelievable precision.", n: "Ananya & Rohit S.", r: "Villa Owner", loc: "Jubilee Hills, Hyderabad" },
+  { q: "Excellent quality and a truly professional team from the first sketch to the final walkthrough.", n: "Karthik R.", r: "Managing Director", loc: "HITEC City, Hyderabad" },
+  { q: "Highly recommended for premium interiors — thoughtful, elegant and beautifully finished.", n: "Priya M.", r: "Homeowner", loc: "Banjara Hills, Hyderabad" },
+  { q: "Timely delivery and outstanding workmanship. They set a new standard for our office headquarters.", n: "Vikram J.", r: "CEO, Meridian", loc: "Financial District, Hyderabad" },
+  { q: "Moon Construction transformed our bare shell duplex villa into a warm, contemporary masterpiece. The 3D designs were spot-on!", n: "Dr. Srinivas & Aruna K.", r: "Duplex Villa Owner", loc: "Jubilee Hills, Hyderabad" },
+  { q: "From structural planning to the final coat of paint, Syed and his team handled our commercial workspace with extreme perfection and finished 2 weeks ahead of schedule!", n: "Rajesh Varma", r: "Tech Park Partner", loc: "Gachibowli, Hyderabad" },
+  { q: "We wanted a fusion of modern minimalism and traditional brass accents for our family home in Vijayawada. Moon Construction delivered beyond what we envisioned.", n: "Deepika & Suresh Reddy", r: "Independent House Owner", loc: "Durga Puram, Vijayawada" },
+  { q: "The modular kitchen and customized lighting design transformed our apartment completely. Their attention to material selection and finish is unmatched.", n: "Meera Nambiar", r: "Luxury Apartment Owner", loc: "Kondapur, Hyderabad" },
+  { q: "Outstanding turnkey service! Managing civil work, electricals, plumbing, and high-end wooden interiors under one roof saved us so much effort.", n: "Venkat Rao", r: "Commercial Property Developer", loc: "Madhapur, Hyderabad" },
+  { q: "Their team is incredibly polite, transparent with budget estimates, and uses top-grade materials. Our false ceilings and living room lounge look straight out of a design magazine.", n: "Sunita & Rahul Sharma", r: "Homeowners", loc: "Tellapur, Hyderabad" },
+  { q: "Delivered an exquisite office showroom setup in Vijayawada. Clients frequently praise the sleek finish and thoughtful lighting layout.", n: "B. V. Prasad", r: "Showroom Owner", loc: "Benz Circle, Vijayawada" },
+  { q: "Their 3D virtual walkthroughs helped us visualize every nook before starting. The final output matched 100% with the proposed design.", n: "Anitha Krishna", r: "Penthouse Owner", loc: "Kokapet, Hyderabad" },
+  { q: "Renovating our 15-year-old ancestral house was a smooth experience thanks to Moon Construction. They strengthened the structure while making the interiors super modern.", n: "Harsha Vardhan", r: "Renovation Client", loc: "Begumpet, Hyderabad" },
+  { q: "High quality, on-time handover, and absolute transparency in costs. We are immensely grateful to Mr. Syed and his passionate team!", n: "Ramesh & Swathi", r: "Gated Community Villa Owner", loc: "Miyapur, Hyderabad" },
 ];
+
 function Testimonials() {
   const [i, setI] = useState(0);
+  const [viewAll, setViewAll] = useState(false);
+
   useEffect(() => {
+    if (viewAll) return;
     const id = setInterval(() => setI((v) => (v + 1) % TESTIMONIALS.length), 6000);
     return () => clearInterval(id);
-  }, []);
+  }, [viewAll]);
+
+  const next = () => setI((v) => (v + 1) % TESTIMONIALS.length);
+  const prev = () => setI((v) => (v - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+
   const t = TESTIMONIALS[i];
+
   return (
-    <Section id="testimonials" eyebrow="Testimonials" title={<>Words From Our <span className="text-gold-gradient">Clients</span></>}>
-      <div className="mx-auto max-w-4xl">
-        <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="rounded-3xl bg-white p-10 md:p-14 text-center gold-border shadow-[var(--shadow-luxe)]">
-          <div className="flex justify-center gap-1 mb-6">
-            {Array.from({ length: 5 }).map((_, k) => <Star key={k} className="h-5 w-5 fill-[color:var(--gold)] text-[color:var(--gold)]" />)}
+    <Section id="testimonials" eyebrow="Testimonials" title={<>Words From Our <span className="text-gold-gradient">Clients</span></>} subtitle="Over 700+ families and business owners trust Moon Construction & Interiors for world-class craftsmanship.">
+      <div className="mx-auto max-w-5xl">
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex rounded-full p-1 bg-white/80 gold-border shadow-sm">
+            <button
+              onClick={() => setViewAll(false)}
+              className={`px-5 py-2 text-xs font-semibold rounded-full transition-all ${!viewAll ? "bg-navy text-white shadow" : "text-navy/70 hover:text-navy"}`}
+            >
+              Featured Carousel
+            </button>
+            <button
+              onClick={() => setViewAll(true)}
+              className={`px-5 py-2 text-xs font-semibold rounded-full transition-all ${viewAll ? "bg-navy text-white shadow" : "text-navy/70 hover:text-navy"}`}
+            >
+              View All (14)
+            </button>
           </div>
-          <p className="font-display text-2xl md:text-3xl text-navy leading-snug">"{t.q}"</p>
-          <div className="mt-8">
-            <div className="font-semibold text-navy">{t.n}</div>
-            <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{t.r}</div>
-          </div>
-        </motion.div>
-        <div className="mt-8 flex justify-center gap-2">
-          {TESTIMONIALS.map((_, k) => (
-            <button key={k} onClick={() => setI(k)} aria-label={`Testimonial ${k + 1}`}
-              className={`h-2 rounded-full transition-all ${i === k ? "w-8" : "w-2"}`}
-              style={{ background: i === k ? "var(--gradient-gold)" : "oklch(0.85 0.02 260)" }} />
-          ))}
         </div>
+
+        {!viewAll ? (
+          <div className="relative">
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.98, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="rounded-3xl bg-white p-8 md:p-14 text-center gold-border shadow-[var(--shadow-luxe)] relative overflow-hidden"
+            >
+              <div className="absolute top-6 left-8 text-gold/15 font-display text-8xl pointer-events-none select-none">“</div>
+              <div className="flex justify-center gap-1 mb-6 relative z-10">
+                {Array.from({ length: 5 }).map((_, k) => (
+                  <Star key={k} className="h-5 w-5 fill-[color:var(--gold)] text-[color:var(--gold)]" />
+                ))}
+              </div>
+              <p className="font-display text-xl sm:text-2xl md:text-3xl text-navy leading-relaxed max-w-3xl mx-auto relative z-10">
+                "{t.q}"
+              </p>
+              <div className="mt-8 relative z-10">
+                <div className="font-display text-lg font-bold text-navy">{t.n}</div>
+                <div className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{t.r} · <span className="text-gold font-medium">{t.loc}</span></div>
+              </div>
+            </motion.div>
+
+            {/* Navigation buttons */}
+            <div className="mt-8 flex items-center justify-between">
+              <button
+                onClick={prev}
+                aria-label="Previous testimonial"
+                className="h-11 w-11 rounded-full grid place-items-center bg-white gold-border shadow-md hover:bg-gold/10 transition-all text-navy cursor-pointer"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+
+              <div className="flex items-center gap-1.5 flex-wrap justify-center max-w-md px-4">
+                {TESTIMONIALS.map((_, k) => (
+                  <button
+                    key={k}
+                    onClick={() => setI(k)}
+                    aria-label={`Testimonial ${k + 1}`}
+                    className={`h-2 rounded-full transition-all cursor-pointer ${i === k ? "w-7" : "w-2"}`}
+                    style={{ background: i === k ? "var(--gradient-gold)" : "oklch(0.85 0.02 260)" }}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={next}
+                aria-label="Next testimonial"
+                className="h-11 w-11 rounded-full grid place-items-center bg-white gold-border shadow-md hover:bg-gold/10 transition-all text-navy cursor-pointer"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {TESTIMONIALS.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: (idx % 4) * 0.05 }}
+                className="rounded-2xl bg-white p-7 gold-border shadow-sm hover:shadow-[var(--shadow-luxe)] transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex gap-1">
+                      {Array.from({ length: 5 }).map((_, k) => (
+                        <Star key={k} className="h-4 w-4 fill-[color:var(--gold)] text-[color:var(--gold)]" />
+                      ))}
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-navy/40 uppercase tracking-widest">#{String(idx + 1).padStart(2, "0")}</span>
+                  </div>
+                  <p className="text-sm text-navy/90 leading-relaxed italic">"{item.q}"</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-border/60">
+                  <div className="font-semibold text-navy text-sm">{item.n}</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5">{item.r} · <span className="text-gold font-medium">{item.loc}</span></div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </Section>
   );
@@ -1599,8 +1702,8 @@ function Contact() {
         <div className="lg:col-span-2 space-y-5">
           {/* Email */}
           <a
-            href="mailto:moonconstructionandinteriors@gmail.com"
-            onClick={(e) => { e.preventDefault(); window.open("mailto:moonconstructionandinteriors@gmail.com", "_self"); }}
+            href="mailto:moonconstructionandinterior@gmail.com"
+            onClick={(e) => { e.preventDefault(); window.open("mailto:moonconstructionandinterior@gmail.com", "_self"); }}
             className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow cursor-pointer"
           >
             <div className="h-11 w-11 shrink-0 rounded-xl grid place-items-center" style={{ background: "var(--gradient-gold)" }}>
@@ -1608,7 +1711,7 @@ function Contact() {
             </div>
             <div>
               <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Email</div>
-              <div className="mt-1 text-sm text-navy font-medium leading-relaxed">moonconstructionandinteriors@gmail.com</div>
+              <div className="mt-1 text-sm text-navy font-medium leading-relaxed">moonconstructionandinterior@gmail.com</div>
             </div>
           </a>
 
@@ -1626,7 +1729,7 @@ function Contact() {
             </div>
           </a>
 
-          {/* Location */}
+          {/* Location - Hyderabad */}
           <a
             href="https://www.google.com/maps/search/?api=1&query=Samridhi+Vasyam+Capital+Park+Road+Madhapur+Hyderabad+500081"
             target="_blank"
@@ -1637,14 +1740,31 @@ function Contact() {
               <MapPin className="h-5 w-5 text-navy" />
             </div>
             <div>
-              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Studio</div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Hyderabad Studio</div>
               <div className="mt-1 text-sm text-navy font-medium leading-relaxed">Second Floor, Samridhi Vasyam, D No 1/98/9/3/23, Capital Park Road, Beside Narayana High School, Cyber Hills Colony, VIP Hills, Jaihind Enclave, Madhapur, Hyderabad, Telangana 500081</div>
             </div>
           </a>
+
+          {/* Location - Vijayawada */}
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=24-29-211+Durga+Puram+Gulabi+Thota+Road+J+Apparao+Street+Vijayawada+520003"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex gap-4 rounded-2xl p-6 gold-border bg-white hover:shadow-[var(--shadow-luxe)] transition-shadow"
+          >
+            <div className="h-11 w-11 shrink-0 rounded-xl grid place-items-center" style={{ background: "var(--gradient-gold)" }}>
+              <MapPin className="h-5 w-5 text-navy" />
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Vijayawada Office</div>
+              <div className="mt-1 text-sm text-navy font-medium leading-relaxed">D.No. 24-29-211, Durga Puram, Gulabi Thota Road, J Apparao Street, Vijayawada, Andhra Pradesh 520003</div>
+            </div>
+          </a>
+
           <div className="rounded-2xl overflow-hidden gold-border h-64">
             <iframe
-              title="Studio location"
-              src="https://www.google.com/maps?q=Madhapur+Hyderabad+VIP+Hills&output=embed"
+              title="Vijayawada Location Map"
+              src="https://www.google.com/maps?q=24-29-211+Durga+Puram+Gulabi+Thota+Road+J+Apparao+Street+Vijayawada+520003&output=embed"
               className="h-full w-full border-0"
               loading="lazy"
             />
@@ -1701,11 +1821,11 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
               <li className="flex gap-2">
                 <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
                 <a
-                  href="mailto:moonconstructionandinteriors@gmail.com"
-                  onClick={(e) => { e.preventDefault(); window.open("mailto:moonconstructionandinteriors@gmail.com", "_self"); }}
+                  href="mailto:moonconstructionandinterior@gmail.com"
+                  onClick={(e) => { e.preventDefault(); window.open("mailto:moonconstructionandinterior@gmail.com", "_self"); }}
                   className="hover:text-gold transition-colors cursor-pointer"
                 >
-                  moonconstructionandinteriors@gmail.com
+                  moonconstructionandinterior@gmail.com
                 </a>
               </li>
               <li className="flex gap-2">
@@ -1714,14 +1834,24 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
               </li>
               <li className="flex gap-2">
                 <MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <a
-                  href="https://www.google.com/maps/search/?api=1&query=Samridhi+Vasyam+Capital+Park+Road+Madhapur+Hyderabad+500081"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gold transition-colors"
-                >
-                  Madhapur, Hyderabad — 500081
-                </a>
+                <div className="space-y-1">
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Samridhi+Vasyam+Capital+Park+Road+Madhapur+Hyderabad+500081"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gold transition-colors block"
+                  >
+                    Madhapur, Hyderabad — 500081
+                  </a>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=24-29-211+Durga+Puram+Gulabi+Thota+Road+J+Apparao+Street+Vijayawada+520003"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-gold transition-colors block"
+                  >
+                    Durga Puram, Vijayawada — 520003
+                  </a>
+                </div>
               </li>
             </ul>
           </div>
