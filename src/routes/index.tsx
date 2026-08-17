@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useSiteData } from "@/lib/siteData";
 import {
   ArrowRight, ArrowUp, Award, Building2, Camera, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Clock, Compass,
   Facebook, Hammer, HardHat, Home, Instagram, Layers, Layout, Leaf, Lightbulb,
   Linkedin, Mail, MapPin, Menu, Palette, Phone, Ruler, ShieldCheck,
-  Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X,
+  Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X, Lock
 } from "lucide-react";
 import logo from "@/assets/moon-logo.png";
 import heroVilla from "@/assets/hero-villa.jpg";
@@ -142,7 +143,13 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
           })}
         </nav>
 
-        <div className="hidden lg:flex items-center">
+        <div className="hidden lg:flex items-center gap-3">
+          <Link
+            to="/admin"
+            className="text-[11px] font-semibold text-gold/90 hover:text-gold flex items-center gap-1.5 border border-gold/30 hover:border-gold/60 px-3.5 py-2 rounded-full transition bg-white/5 backdrop-blur-md"
+          >
+            <Lock className="h-3 w-3 text-gold" /> Admin Portal
+          </Link>
           <button
             onClick={() => onTabChange("contact")}
             className="btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none shadow-[0_4px_20px_rgba(212,175,55,0.3)]"
@@ -179,12 +186,20 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
                 {n.label}
               </button>
             ))}
+            <Link
+              to="/admin"
+              onClick={() => setOpen(false)}
+              className="text-lg font-display text-left p-3 rounded-2xl cursor-pointer border border-gold/40 text-gold flex items-center justify-between bg-white/5"
+            >
+              <span>Admin Portal</span>
+              <Lock className="h-4 w-4" />
+            </Link>
             <button
               onClick={() => {
                 onTabChange("contact");
                 setOpen(false);
               }}
-              className="btn-gold btn-gold-hover mt-4 w-full justify-center cursor-pointer border-0 focus:outline-none"
+              className="btn-gold btn-gold-hover mt-2 w-full justify-center cursor-pointer border-0 focus:outline-none"
             >
               Get Quote
             </button>
@@ -218,6 +233,9 @@ function Counter({ end, suffix = "", duration = 2 }: { end: number; suffix?: str
 }
 
 function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
+  const [siteData] = useSiteData();
+  const hero = siteData.hero;
+
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0">
@@ -233,23 +251,21 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
           <div className="lg:col-span-8">
             <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6 flex items-center gap-2">
               <Sparkles className="h-3.5 w-3.5 text-gold" />
-              <span>Premium Construction &amp; Interior Design</span>
+              <span>{hero.eyebrow}</span>
             </motion.div>
             <motion.h1
               initial="hidden" animate="show" custom={1} variants={fadeUp}
               className="font-display text-white text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.02] font-semibold"
             >
-              Building Spaces. <br />
-              <span className="text-gold-gradient italic">Designing Dreams.</span> <br />
-              Inspiring Futures.
+              {hero.titleLine1} <br />
+              <span className="text-gold-gradient italic">{hero.titleLine2}</span> <br />
+              {hero.titleLine3}
             </motion.h1>
             <motion.p
               initial="hidden" animate="show" custom={2} variants={fadeUp}
               className="mt-8 max-w-2xl text-white/75 text-base md:text-lg leading-relaxed"
             >
-              Delivering premium construction and interior design solutions for homes, villas,
-              apartments, offices, commercial spaces, and turnkey projects — with over 700+
-              satisfied clients worldwide.
+              {hero.subtitle}
             </motion.p>
             <motion.div initial="hidden" animate="show" custom={3} variants={fadeUp}
               className="mt-10 flex flex-wrap items-center gap-4">
@@ -265,18 +281,18 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
               className="mt-14 flex flex-wrap items-center gap-10">
               <div>
                 <div className="font-display text-5xl md:text-6xl text-gold-gradient font-bold">
-                  <Counter end={700} suffix="+" />
+                  <Counter end={hero.happyClientsCount} suffix="+" />
                 </div>
                 <div className="mt-1 text-xs tracking-[0.3em] uppercase text-white/70">Happy Clients</div>
               </div>
               <div className="h-14 w-px bg-white/15" />
               <div>
-                <div className="font-display text-5xl md:text-6xl text-white font-bold"><Counter end={150} suffix="+" /></div>
+                <div className="font-display text-5xl md:text-6xl text-white font-bold"><Counter end={hero.projectsCount} suffix="+" /></div>
                 <div className="mt-1 text-xs tracking-[0.3em] uppercase text-white/70">Projects</div>
               </div>
               <div className="h-14 w-px bg-white/15" />
               <div>
-                <div className="font-display text-5xl md:text-6xl text-white font-bold"><Counter end={10} suffix="+" /></div>
+                <div className="font-display text-5xl md:text-6xl text-white font-bold"><Counter end={hero.yearsExperience} suffix="+" /></div>
                 <div className="mt-1 text-xs tracking-[0.3em] uppercase text-white/70">Years</div>
               </div>
             </motion.div>
@@ -297,8 +313,8 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
                 {/* Founder photo */}
                 <div className="relative overflow-hidden">
                   <img
-                    src="/founder.jpg"
-                    alt="Mr. Syed Ghouseuddin — Founder & Managing Director"
+                    src={hero.founderImage}
+                    alt={hero.founderName}
                     className="w-full h-80 object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   />
                   {/* Glass gradient overlay blending photo into card */}
@@ -308,14 +324,13 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
                 {/* Glassy Info block */}
                 <div className="px-6 pb-6 pt-2 relative z-10 bg-white/5 backdrop-blur-md">
                   <div className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-1" style={{ color: "var(--gold)" }}>
-                    Founder &amp; Managing Director
+                    {hero.founderTitle}
                   </div>
                   <h3 className="font-display text-2xl font-bold text-white leading-tight">
-                    Mr. Syed<br />
-                    <span className="text-gold-gradient">Ghouseuddin</span>
+                    {hero.founderName}
                   </h3>
                   <div className="mt-3 text-xs text-white/80 leading-relaxed italic border-l-2 border-[color:var(--gold)]/80 bg-white/5 backdrop-blur-sm p-3 rounded-r-xl shadow-inner">
-                    "Engineering excellence meets timeless design — crafted for the way you live."
+                    "{hero.founderQuote}"
                   </div>
                   <div className="mt-4 flex items-center gap-2.5">
                     {[Award, ShieldCheck, Sparkles].map((I, i) => (
@@ -343,6 +358,9 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
 
 /* ---------------- ABOUT ---------------- */
 function About() {
+  const [siteData] = useSiteData();
+  const about = siteData.about;
+
   const perks = [
     { icon: Users, label: "700+ Happy Clients" },
     { icon: Award, label: "Premium Quality Materials" },
@@ -354,7 +372,7 @@ function About() {
     { icon: ShieldCheck, label: "Dedicated Support" },
   ];
   return (
-    <Section id="about" eyebrow="About Us" title={<>About <em className="text-gold-gradient not-italic">Moon Construction</em> & Interiors</>}>
+    <Section id="about" eyebrow={about.eyebrow} title={<>{about.title}</>}>
       <div className="grid lg:grid-cols-12 gap-16 items-center">
         <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
           className="lg:col-span-6 relative">
@@ -368,7 +386,7 @@ function About() {
                 <Award className="h-6 w-6 text-navy" />
               </div>
               <div>
-                <div className="font-display text-2xl text-navy font-bold">10+ Years</div>
+                <div className="font-display text-2xl text-navy font-bold">{about.yearsBadge}</div>
                 <div className="text-xs uppercase tracking-widest text-muted-foreground">Of Excellence</div>
               </div>
             </div>
@@ -378,15 +396,11 @@ function About() {
         <div className="lg:col-span-6">
           <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
             className="text-lg text-muted-foreground leading-relaxed">
-            Moon Construction & Interiors is a trusted name in premium construction and interior
-            design. With more than <strong className="text-navy">700 satisfied clients worldwide</strong>,
-            we specialize in residential construction, commercial buildings, luxury villas, office
-            interiors, modular kitchens, turnkey projects, renovations, and architectural planning.
+            {about.paragraph1}
           </motion.p>
           <motion.p initial="hidden" whileInView="show" viewport={{ once: true }} custom={1} variants={fadeUp}
             className="mt-5 text-muted-foreground leading-relaxed">
-            Our team combines engineering excellence, innovative design, and superior craftsmanship
-            to transform every project into a masterpiece.
+            {about.paragraph2}
           </motion.p>
 
           {/* Founder Profile */}
@@ -396,12 +410,12 @@ function About() {
             <div className="absolute -right-20 -bottom-20 h-40 w-40 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
             <div className="absolute -left-20 -top-20 h-40 w-40 rounded-full bg-gold/5 blur-3xl pointer-events-none" />
             
-            <img src="/pic 23.jpeg" alt="Syed, Founder" className="h-28 w-28 rounded-full object-cover object-[center_18%] border-2 border-gold shadow-lg shrink-0 relative z-10" />
+            <img src={about.founderImage} alt={about.founderName} className="h-28 w-28 rounded-full object-cover object-[center_18%] border-2 border-gold shadow-lg shrink-0 relative z-10" />
             <div className="text-center sm:text-left relative z-10">
-              <div className="text-xs uppercase tracking-[0.25em] text-gold font-bold">Founder & Managing Director</div>
-              <h4 className="font-display text-3xl text-white font-bold mt-1">Syed</h4>
+              <div className="text-xs uppercase tracking-[0.25em] text-gold font-bold">{about.founderRole}</div>
+              <h4 className="font-display text-3xl text-white font-bold mt-1">{about.founderName}</h4>
               <p className="text-sm text-white/80 mt-3 leading-relaxed italic">
-                "Our mission is to combine timeless design with engineering integrity. Every project we undertake is crafted with the highest precision, bringing our clients' dreams to life."
+                "{about.founderQuote}"
               </p>
             </div>
           </motion.div>
@@ -425,47 +439,40 @@ function About() {
 }
 
 /* ---------------- SERVICES ---------------- */
-const SERVICES = [
-  { icon: Home, name: "Residential Construction" },
-  { icon: Building2, name: "Commercial Construction" },
-  { icon: Sparkles, name: "Luxury Villas" },
-  { icon: Compass, name: "Architecture" },
-  { icon: Sofa, name: "Interior Design" },
-  { icon: Layout, name: "Office Interiors" },
-  { icon: Utensils, name: "Modular Kitchen" },
-  { icon: Layers, name: "False Ceiling" },
-  { icon: Lightbulb, name: "Lighting Design" },
-  { icon: Trees, name: "Landscape Design" },
-  { icon: Hammer, name: "Renovation" },
-  { icon: Palette, name: "Painting" },
-  { icon: Ruler, name: "Flooring" },
-  { icon: Leaf, name: "Wood Works" },
-  { icon: ShieldCheck, name: "Turnkey Construction" },
-  { icon: HardHat, name: "Structural Design" },
-];
+const ICON_MAP: Record<string, any> = {
+  Home, Building2, Sparkles, Compass, Sofa, Layout, Utensils, Layers, Lightbulb, Trees, Hammer, Palette, Ruler, Leaf, ShieldCheck, HardHat
+};
+
 function Services() {
+  const [siteData] = useSiteData();
+  const services = siteData.services;
+
   return (
     <Section id="services" eyebrow="What We Do" title={<>Signature <span className="text-gold-gradient">Services</span></>}
       subtitle="End-to-end solutions crafted with precision — from the first blueprint to the final finish."
       dark>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-        {SERVICES.map((s, i) => (
-          <motion.div key={s.name} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
-            custom={i % 4} variants={fadeUp}
-            className="group relative overflow-hidden rounded-2xl p-6 md:p-7 gold-border glass-card transition-all hover:-translate-y-1"
-          >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(160deg, oklch(0.78 0.13 85 / 0.15), transparent)" }} />
-            <div className="relative">
-              <div className="h-12 w-12 rounded-xl grid place-items-center mb-5" style={{ background: "var(--gradient-gold)" }}>
-                <s.icon className="h-5 w-5 text-navy-deep" />
+        {services.map((s, i) => {
+          const IconComponent = ICON_MAP[s.iconName] || Sparkles;
+          return (
+            <motion.div key={s.id || s.name} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}
+              custom={i % 4} variants={fadeUp}
+              className="group relative overflow-hidden rounded-2xl p-6 md:p-7 gold-border glass-card transition-all hover:-translate-y-1"
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "linear-gradient(160deg, oklch(0.78 0.13 85 / 0.15), transparent)" }} />
+              <div className="relative">
+                <div className="h-12 w-12 rounded-xl grid place-items-center mb-5" style={{ background: "var(--gradient-gold)" }}>
+                  <IconComponent className="h-5 w-5 text-navy-deep" />
+                </div>
+                <h3 className="font-display text-lg text-white font-semibold">{s.name}</h3>
+                {s.description && <p className="text-xs text-white/70 mt-2 leading-relaxed">{s.description}</p>}
+                <div className="mt-4 flex items-center gap-1 text-xs uppercase tracking-widest text-gold opacity-0 group-hover:opacity-100 transition-opacity">
+                  Explore <ArrowRight className="h-3 w-3" />
+                </div>
               </div>
-              <h3 className="font-display text-lg text-white font-semibold">{s.name}</h3>
-              <div className="mt-4 flex items-center gap-1 text-xs uppercase tracking-widest text-gold opacity-0 group-hover:opacity-100 transition-opacity">
-                Explore <ArrowRight className="h-3 w-3" />
-              </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </Section>
   );
@@ -826,13 +833,8 @@ function VideoCard({ video, onEdit, onDelete }: { video: VideoEntry; onEdit: () 
 
 /* ── Awards Marquee (home page) ── */
 function AwardsMarquee() {
-  const photos: AwardPhoto[] = (() => {
-    try {
-      const stored = localStorage.getItem(AWARDS_KEY);
-      const parsed: AwardPhoto[] = stored ? JSON.parse(stored) : DEFAULT_AWARD_PHOTOS;
-      return parsed.length > 0 ? parsed : DEFAULT_AWARD_PHOTOS;
-    } catch { return DEFAULT_AWARD_PHOTOS; }
-  })();
+  const [siteData] = useSiteData();
+  const photos = siteData.awards;
 
   // Duplicate items so the loop feels seamless
   const items = [...photos, ...photos, ...photos];
@@ -1145,61 +1147,49 @@ function AwardsPage() {
 }
 
 function Portfolio() {
+  const [siteData, setSiteData] = useSiteData();
   const [tab, setTab] = useState<"photos" | "videos" | "awards">("photos");
   const [cat, setCat] = useState("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
-  const [videos, setVideos] = useState<VideoEntry[]>(() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"); } catch { return []; }
-  });
   const [showModal, setShowModal] = useState(false);
   const [editVideo, setEditVideo] = useState<VideoEntry | undefined>();
 
-  // Awards photo gallery state
-  const [awardPhotos, setAwardPhotos] = useState<AwardPhoto[]>(() => {
-    try {
-      const stored = localStorage.getItem(AWARDS_KEY);
-      return stored ? JSON.parse(stored) : DEFAULT_AWARD_PHOTOS;
-    } catch { return DEFAULT_AWARD_PHOTOS; }
-  });
+  const videos = siteData.videos;
+  const awardPhotos = siteData.awards;
+  const PORTFOLIO = siteData.photos;
+
   const [showAwardModal, setShowAwardModal] = useState(false);
   const [awardLightbox, setAwardLightbox] = useState<string | null>(null);
 
-  const saveAwardPhotos = (updated: AwardPhoto[]) => {
-    setAwardPhotos(updated);
-    localStorage.setItem(AWARDS_KEY, JSON.stringify(updated));
+  const handlePhotoAdd = (p: AwardPhoto) => {
+    setSiteData({ ...siteData, awards: [...siteData.awards, p] });
   };
-  const handlePhotoAdd = (p: AwardPhoto) => saveAwardPhotos([...awardPhotos, p]);
+
   const handlePhotoDelete = async (photo: AwardPhoto) => {
     if (!confirm("Remove this photo?")) return;
     try { await fetch("/api/delete-award-image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ filename: photo.filename }) }); } catch { /* ok */ }
-    saveAwardPhotos(awardPhotos.filter(p => p.id !== photo.id));
-  };
-
-  const saveVideos = (updated: VideoEntry[]) => {
-    setVideos(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setSiteData({ ...siteData, awards: siteData.awards.filter(p => p.id !== photo.id) });
   };
 
   const handleSave = (v: VideoEntry) => {
     const updated = editVideo
       ? videos.map((x) => (x.id === editVideo.id ? v : x))
       : [...videos, v];
-    saveVideos(updated);
+    setSiteData({ ...siteData, videos: updated });
     setShowModal(false);
     setEditVideo(undefined);
   };
 
   const handleDelete = async (video: VideoEntry) => {
     if (!confirm("Remove this video?")) return;
-    // Delete file from disk
     try {
       await fetch("/api/delete-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename: video.filename }),
       });
-    } catch { /* continue even if file delete fails */ }
-    saveVideos(videos.filter((v) => v.id !== video.id));
+    } catch { /* ok */ }
+    setSiteData({ ...siteData, videos: videos.filter((v) => v.id !== video.id) });
   };
 
   const items = PORTFOLIO.filter((p) => cat === "All" || p.cat === cat);
@@ -1420,6 +1410,8 @@ const PROJECTS = [
   { img: "/pic 22.jpeg", title: "Velvet Master Suite", desc: "A tufted, layered master bedroom finished in bronze, marble and hand-loomed textiles.", location: "Banjara Hills", size: "680 sq.ft", time: "10 weeks" },
 ];
 function Projects({ onTabChange }: { onTabChange: (tabId: string) => void }) {
+  const [siteData] = useSiteData();
+  const PROJECTS = siteData.projects;
   return (
     <Section id="projects" eyebrow="Featured Projects" title={<>Signature <span className="text-gold-gradient">Projects</span></>}>
       <div className="space-y-16 md:space-y-24">
@@ -1497,6 +1489,8 @@ const TESTIMONIALS = [
 ];
 
 function Testimonials() {
+  const [siteData] = useSiteData();
+  const TESTIMONIALS = siteData.testimonials;
   const [i, setI] = useState(0);
   const [viewAll, setViewAll] = useState(false);
 
@@ -1827,6 +1821,11 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
                   </button>
                 </li>
               ))}
+              <li>
+                <Link to="/admin" className="hover:text-gold transition-colors text-amber-400 font-semibold flex items-center gap-1.5 pt-2">
+                  <Lock className="h-3 w-3" /> Admin Portal
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
