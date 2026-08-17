@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation, useRouter } from "@tanstack/react-router";
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useSiteData } from "@/lib/siteData";
@@ -246,7 +246,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
         }} />
       </div>
 
-      <div className="container-luxe relative z-10 pt-32 pb-20 md:pt-40">
+      <div className="container-luxe relative z-10 pt-20 pb-20 md:pt-24">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8">
             <motion.div initial="hidden" animate="show" variants={fadeUp} className="eyebrow mb-6 flex items-center gap-2">
@@ -1911,11 +1911,19 @@ function ScrollBar() {
   );
 }
 
-function Index() {
-  const [activeTab, setActiveTab] = useState("home");
+export const VALID_TABS = ["home", "about", "services", "awards", "portfolio", "projects", "testimonials", "faq", "contact"];
+
+export function Index() {
+  const router = useRouter();
+  const location = useLocation();
+  const activeTab = location.pathname.split("/").filter(Boolean)[0] ?? "home";
 
   const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
+    if (tabId === "home") {
+      router.navigate({ to: "/" });
+    } else {
+      router.navigate({ to: "/$tab", params: { tab: tabId } });
+    }
     window.scrollTo({ top: 0, behavior: "instant" });
   };
 

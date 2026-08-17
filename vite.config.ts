@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import netlify from "@netlify/vite-plugin-tanstack-start";
 import path from "path";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import { existsSync } from "fs";
@@ -148,6 +149,7 @@ export default defineConfig({
     }),
     react(),
     tailwindcss(),
+    netlify(),
   ],
   resolve: {
     alias: {
