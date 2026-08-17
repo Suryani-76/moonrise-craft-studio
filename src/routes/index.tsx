@@ -513,6 +513,13 @@ function Process() {
 /* ---------------- PORTFOLIO ---------------- */
 const CATEGORIES = ["All", "Luxury Villas", "Living Rooms", "Modular Kitchens", "Offices", "Bedrooms", "Commercial"];
 const PORTFOLIO = [
+  { img: "/pic 32.jpeg", cat: "Commercial", title: "Gold Curtain Unveiling Ceremony" },
+  { img: "/pic 29.jpeg", cat: "Commercial", title: "Mana Amaravathi State Icons Award" },
+  { img: "/pic 25.jpeg", cat: "Commercial", title: "Andhra Pradesh Logo Unveiling" },
+  { img: "/pic 26.jpeg", cat: "Commercial", title: "Global Icons Forum Honors" },
+  { img: "/pic 27.jpeg", cat: "Commercial", title: "Chief Guest Felicitation" },
+  { img: "/pic 28.jpeg", cat: "Commercial", title: "Moon Construction Team Excellence" },
+  { img: "/pic 24.jpeg", cat: "Commercial", title: "Executive Leadership Stage Portrait" },
   { img: "/pic 1.jpeg", cat: "Luxury Villas", title: "Modern Elevation" },
   { img: "/pic2.jpeg", cat: "Living Rooms", title: "Cozy Hearth" },
   { img: "/pic 3.jpeg", cat: "Modular Kitchens", title: "Gourmet Kitchen" },
@@ -900,8 +907,15 @@ function AwardsMarquee() {
 
 /* ── Awards Gallery ── */
 interface AwardPhoto { id: string; path: string; filename: string; }
-const AWARDS_KEY = "moon_award_photos_v1";
+const AWARDS_KEY = "moon_award_photos_v4";
 const DEFAULT_AWARD_PHOTOS: AwardPhoto[] = [
+  { id: "award-14", path: "/awards/award_14.jpg", filename: "award_14.jpg" },
+  { id: "award-11", path: "/awards/award_11.jpg", filename: "award_11.jpg" },
+  { id: "award-7", path: "/awards/award_7.jpg", filename: "award_7.jpg" },
+  { id: "award-8", path: "/awards/award_8.jpg", filename: "award_8.jpg" },
+  { id: "award-9", path: "/awards/award_9.jpg", filename: "award_9.jpg" },
+  { id: "award-10", path: "/awards/award_10.jpg", filename: "award_10.jpg" },
+  { id: "award-6", path: "/awards/award_6.jpg", filename: "award_6.jpg" },
   { id: "award-1", path: "/awards/award_1.jpg", filename: "award_1.jpg" },
   { id: "award-2", path: "/awards/award_2.jpg", filename: "award_2.jpg" },
   { id: "award-3", path: "/awards/award_3.jpg", filename: "award_3.jpg" },
