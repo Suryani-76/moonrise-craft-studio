@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useLocation, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useLocation, useRouter } from "@tanstack/react-router";
 import { motion, AnimatePresence, useInView, useScroll, useSpring, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useSiteData } from "@/lib/siteData";
@@ -6,7 +6,7 @@ import {
   ArrowRight, ArrowUp, Award, Building2, Camera, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Clock, Compass,
   Facebook, Hammer, HardHat, Home, Instagram, Layers, Layout, Leaf, Lightbulb,
   Linkedin, Mail, MapPin, Menu, Palette, Phone, Ruler, ShieldCheck,
-  Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X, Lock
+  Sofa, Sparkles, Star, Trees, Users, Utensils, Video, X
 } from "lucide-react";
 import logo from "@/assets/moon-logo.png";
 import heroVilla from "@/assets/hero-villa.jpg";
@@ -15,6 +15,8 @@ import kitchenImg from "@/assets/kitchen.jpg";
 import officeImg from "@/assets/office.jpg";
 import bedroomImg from "@/assets/bedroom.jpg";
 import commercialImg from "@/assets/commercial.jpg";
+import { QuoteModal } from "@/components/QuoteModal";
+import { sendEnquiry } from "@/lib/sendEnquiry";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -85,7 +87,7 @@ const NAV = [
   { id: "contact", label: "Contact" },
 ];
 
-function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (tabId: string) => void }) {
+function Navbar({ activeTab, onTabChange, onOpenQuote }: { activeTab: string; onTabChange: (tabId: string) => void; onOpenQuote: () => void }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -144,14 +146,8 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
-          <Link
-            to="/admin"
-            className="text-[11px] font-semibold text-gold/90 hover:text-gold flex items-center gap-1.5 border border-gold/30 hover:border-gold/60 px-3.5 py-2 rounded-full transition bg-white/5 backdrop-blur-md"
-          >
-            <Lock className="h-3 w-3 text-gold" /> Admin Portal
-          </Link>
           <button
-            onClick={() => onTabChange("contact")}
+            onClick={onOpenQuote}
             className="btn-gold btn-gold-hover !py-2.5 !px-5 !text-xs cursor-pointer bg-transparent border-0 focus:outline-none shadow-[0_4px_20px_rgba(212,175,55,0.3)]"
           >
             Get Quote <ArrowRight className="h-3.5 w-3.5" />
@@ -186,18 +182,10 @@ function Navbar({ activeTab, onTabChange }: { activeTab: string; onTabChange: (t
                 {n.label}
               </button>
             ))}
-            <Link
-              to="/admin"
-              onClick={() => setOpen(false)}
-              className="text-lg font-display text-left p-3 rounded-2xl cursor-pointer border border-gold/40 text-gold flex items-center justify-between bg-white/5"
-            >
-              <span>Admin Portal</span>
-              <Lock className="h-4 w-4" />
-            </Link>
             <button
               onClick={() => {
-                onTabChange("contact");
                 setOpen(false);
+                onOpenQuote();
               }}
               className="btn-gold btn-gold-hover mt-2 w-full justify-center cursor-pointer border-0 focus:outline-none"
             >
@@ -232,7 +220,7 @@ function Counter({ end, suffix = "", duration = 2 }: { end: number; suffix?: str
   return <span ref={ref}>{v}{suffix}</span>;
 }
 
-function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
+function Hero({ onTabChange, onOpenQuote }: { onTabChange: (tabId: string) => void; onOpenQuote: () => void }) {
   const [siteData] = useSiteData();
   const hero = siteData.hero;
 
@@ -269,7 +257,7 @@ function Hero({ onTabChange }: { onTabChange: (tabId: string) => void }) {
             </motion.p>
             <motion.div initial="hidden" animate="show" custom={3} variants={fadeUp}
               className="mt-10 flex flex-wrap items-center gap-4">
-              <button onClick={() => onTabChange("contact")} className="btn-gold btn-gold-hover cursor-pointer bg-transparent border-0 focus:outline-none">
+              <button onClick={onOpenQuote} className="btn-gold btn-gold-hover cursor-pointer bg-transparent border-0 focus:outline-none">
                 Get Free Consultation <ArrowRight className="h-4 w-4" />
               </button>
               <button onClick={() => onTabChange("portfolio")} className="btn-outline-gold hover:bg-white/10 cursor-pointer bg-transparent border-0 focus:outline-none">
@@ -1651,15 +1639,55 @@ function FAQSection() {
 }
 
 /* ---------------- CONTACT ---------------- */
-function Contact() {
+function Contact({ onOpenQuote }: { onOpenQuote?: () => void }) {
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const fd = new FormData(e.currentTarget);
+    await sendEnquiry({
+      name: (fd.get("name") as string) || "",
+      phone: (fd.get("phone") as string) || "",
+      email: (fd.get("email") as string) || "",
+      location: (fd.get("location") as string) || "",
+      projectType: (fd.get("type") as string) || "",
+      budget: (fd.get("budget") as string) || "",
+      message: (fd.get("message") as string) || "",
+      source: "Contact Page",
+    });
+    setSubmitting(false);
+    setSent(true);
+  };
+
   return (
     <Section id="contact" eyebrow="Get In Touch" title={<>Let's Build Something <span className="text-gold-gradient">Extraordinary</span></>}
       subtitle="Share a few details and our team will reach out within 24 hours.">
+      {onOpenQuote && (
+        <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-white/5 gold-border backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl grid place-items-center bg-gold/15 text-gold shrink-0">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-white">Need a detailed square footage &amp; budget estimation?</div>
+              <div className="text-xs text-white/70">Use our bespoke quote drawer to get a tailored estimate from our senior architects.</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenQuote}
+            className="btn-gold btn-gold-hover !py-2 !px-5 !text-xs whitespace-nowrap cursor-pointer border-0"
+          >
+            Open Quote Modal <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
       <div className="grid lg:grid-cols-5 gap-10">
         <motion.form
           initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}
-          onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+          onSubmit={handleSubmit}
           className="lg:col-span-3 rounded-3xl bg-white p-8 md:p-10 gold-border shadow-[var(--shadow-luxe)] space-y-5">
           <div className="grid md:grid-cols-2 gap-5">
             {[
@@ -1702,8 +1730,14 @@ function Contact() {
             <textarea name="message" rows={4}
               className="mt-2 block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-[color:var(--gold)] focus:ring-2 focus:ring-[color:var(--gold)]/20 transition" />
           </label>
-          <button type="submit" className="btn-gold btn-gold-hover w-full md:w-auto">
-            {sent ? <><CheckCircle2 className="h-4 w-4" /> Sent — we'll be in touch</> : <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>}
+          <button type="submit" disabled={submitting} className="btn-gold btn-gold-hover w-full md:w-auto cursor-pointer">
+            {submitting ? (
+              <>Sending Enquiry...</>
+            ) : sent ? (
+              <><CheckCircle2 className="h-4 w-4" /> Sent to moonconstructionandinterior@gmail.com</>
+            ) : (
+              <>Submit Enquiry <ArrowRight className="h-4 w-4" /></>
+            )}
           </button>
         </motion.form>
 
@@ -1821,11 +1855,6 @@ function Footer({ onTabChange }: { onTabChange: (tabId: string) => void }) {
                   </button>
                 </li>
               ))}
-              <li>
-                <Link to="/admin" className="hover:text-gold transition-colors text-amber-400 font-semibold flex items-center gap-1.5 pt-2">
-                  <Lock className="h-3 w-3" /> Admin Portal
-                </Link>
-              </li>
             </ul>
           </div>
           <div>
@@ -1917,6 +1946,7 @@ export function Index() {
   const router = useRouter();
   const location = useLocation();
   const activeTab = location.pathname.split("/").filter(Boolean)[0] ?? "home";
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
   const handleTabChange = (tabId: string) => {
     if (tabId === "home") {
@@ -1932,7 +1962,7 @@ export function Index() {
       case "home":
         return (
           <>
-            <Hero onTabChange={handleTabChange} />
+            <Hero onTabChange={handleTabChange} onOpenQuote={() => setQuoteModalOpen(true)} />
             <AwardsMarquee />
           </>
         );
@@ -1961,16 +1991,16 @@ export function Index() {
       case "faq":
         return <FAQSection />;
       case "contact":
-        return <Contact />;
+        return <Contact onOpenQuote={() => setQuoteModalOpen(true)} />;
       default:
-        return <Hero onTabChange={handleTabChange} />;
+        return <Hero onTabChange={handleTabChange} onOpenQuote={() => setQuoteModalOpen(true)} />;
     }
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <ScrollBar />
-      <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
+      <Navbar activeTab={activeTab} onTabChange={handleTabChange} onOpenQuote={() => setQuoteModalOpen(true)} />
       <main className="flex-grow pt-20">
         <AnimatePresence mode="wait">
           <motion.div
@@ -1986,6 +2016,7 @@ export function Index() {
       </main>
       <Footer onTabChange={handleTabChange} />
       <Floating />
+      <QuoteModal isOpen={quoteModalOpen} onClose={() => setQuoteModalOpen(false)} />
     </div>
   );
 }
