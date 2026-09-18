@@ -1,0 +1,3 @@
+# Force 301 redirect Netlify default subdomain to primary custom domain
+https://mooncid.netlify.app/* https://mooncid.com/:splat 301!
+http://mooncid.netlify.app/* https://mooncid.com/:splat 301!

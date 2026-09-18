@@ -21,7 +21,11 @@ import { sendEnquiry } from "@/lib/sendEnquiry";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { property: "og:image", content: "https://id-preview--1b1525ea-94aa-4fcd-aaa8-2872a8e46f41.lovable.app/favicon.png" },
+      { property: "og:image", content: "https://mooncid.com/pic%201.jpeg" },
+      { property: "og:url", content: "https://mooncid.com/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://mooncid.com/" },
     ],
   }),
   component: Index,
