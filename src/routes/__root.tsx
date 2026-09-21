@@ -69,7 +69,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://mooncid.com/pic%201.jpeg" },
     ],
     links: [
-      { rel: "canonical", href: "https://mooncid.com/" },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

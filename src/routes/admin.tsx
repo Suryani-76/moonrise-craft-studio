@@ -14,6 +14,9 @@ import logo from "@/assets/moon-logo.png";
 export const Route = createFileRoute("/admin")({
   head: () => ({
     title: "Admin Panel — Moon Construction & Interiors",
+    meta: [
+      { name: "robots", content: "noindex, nofollow" },
+    ],
   }),
   component: AdminPage,
 });
